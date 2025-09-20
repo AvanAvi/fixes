@@ -23,4 +23,15 @@ class BookTest {
         assertEquals(LocalDate.of(2008, 8, 1), book.getPublishedDate());
         assertTrue(book.isAvailable());
     }
+    
+    @Test
+    void bookShouldHaveACategory() {
+        Category category = new Category();
+        category.setName("Software Engineering");
+
+        Book book = new Book();
+        book.setCategory(category);
+
+        assertEquals(category, book.getCategory());
+    }
 }
