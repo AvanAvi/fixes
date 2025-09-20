@@ -77,6 +77,18 @@ class CategoryTest {
 
         category.addBook(book);               // first add – OK
         assertThrows(IllegalArgumentException.class,
-                     () -> category.addBook(book)); // duplicate – must fail
+                     () -> category.addBook(book)); // duplicate 
+    }
+    
+    @Test
+    void removeBookShouldRejectUnknownBook() {
+        Category category = new Category();
+        category.setName("Software Engineering");
+
+        Book book = new Book();
+        book.setTitle("Refactoring");
+
+        assertThrows(IllegalArgumentException.class,
+                     () -> category.removeBook(book)); // book never added
     }
 }

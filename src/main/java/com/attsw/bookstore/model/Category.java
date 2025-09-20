@@ -35,6 +35,10 @@ public class Category {
     	if (book == null) {
             throw new IllegalArgumentException("Book must not be null");
         }
+    	
+    	if (!books.contains(book)) {
+            throw new IllegalArgumentException("Book not found in category");
+        }
         books.remove(book);
         book.setCategory(null);
     }
