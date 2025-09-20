@@ -32,4 +32,19 @@ class CategoryTest {
         assertTrue(category.getBooks().contains(cleanCode));
         assertTrue(category.getBooks().contains(effectiveJava));
     }
+    
+    @Test
+    void whenRemovedFromCategory_bookLosesCategoryReference() {
+        Category category = new Category();
+        category.setName("Software Engineering");
+
+        Book book = new Book();
+        book.setTitle("Refactoring");
+
+        category.addBook(book);
+        assertEquals(category, book.getCategory());   // precondition
+
+        category.removeBook(book);                    // new behaviour
+        assertNull(book.getCategory());               // expectation
+    }
 }

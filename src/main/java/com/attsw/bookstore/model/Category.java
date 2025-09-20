@@ -16,7 +16,6 @@ public class Category {
         return name;
     }
     
-    
     public void addBook(Book book) {
         books.add(book);
         book.setCategory(this); 
@@ -24,5 +23,10 @@ public class Category {
 
     public List<Book> getBooks() {
         return books;
+    }
+    
+    public void removeBook(Book book) {
+        books.remove(book);
+        book.setCategory(null);
     }
 }
