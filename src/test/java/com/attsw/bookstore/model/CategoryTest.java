@@ -56,4 +56,13 @@ class CategoryTest {
         assertThrows(IllegalArgumentException.class,
                      () -> category.addBook(null));
     }
+    
+    @Test
+    void removeBookShouldRejectNull() {
+        Category category = new Category();
+        category.setName("Software Engineering");
+
+        assertThrows(IllegalArgumentException.class,
+                     () -> category.removeBook(null));
+    }
 }

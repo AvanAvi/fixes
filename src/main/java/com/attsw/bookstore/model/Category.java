@@ -30,6 +30,9 @@ public class Category {
     }
     
     public void removeBook(Book book) {
+    	if (book == null) {
+            throw new IllegalArgumentException("Book must not be null");
+        }
         books.remove(book);
         book.setCategory(null);
     }
