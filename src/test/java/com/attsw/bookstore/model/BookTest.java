@@ -34,4 +34,17 @@ class BookTest {
 
         assertEquals(category, book.getCategory());
     }
+    
+    @Test
+    void whenAddedToCategory_bookKnowsItsCategory() {
+        Category category = new Category();
+        category.setName("Software Engineering");
+
+        Book book = new Book();
+        book.setTitle("Refactoring");
+
+        category.addBook(book);         
+
+        assertEquals(category, book.getCategory());  
+    }
 }

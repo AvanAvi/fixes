@@ -1,6 +1,5 @@
 package com.attsw.bookstore.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,6 +19,7 @@ public class Category {
     
     public void addBook(Book book) {
         books.add(book);
+        book.setCategory(this); 
     }
 
     public List<Book> getBooks() {
