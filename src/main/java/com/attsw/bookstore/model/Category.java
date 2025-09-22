@@ -1,44 +1,41 @@
 package com.attsw.bookstore.model;
 
+import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
-
+@Entity
 public class Category {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String name;
-    private final java.util.List<Book> books = new java.util.ArrayList<>();
-    
-    public void setName(String name) {
-        this.name = name;
-    }
 
-    public String getName() {
-        return name;
-    }
-    
+    @OneToMany(mappedBy = "category")
+    private final List<Book> books = new ArrayList<>();
+
+    protected Category() {}
+
+    public Long getId() { return id; }
+
+    public void setName(String name) { this.name = name; }
+
+    public String getName() { return name; }
+
     public void addBook(Book book) {
-    	if (book == null) {
-            throw new IllegalArgumentException("Book must not be null");
-    	}
-    	if (books.contains(book)) {
-            throw new IllegalArgumentException("Book already present in category");
-    	}
+        if (book == null) throw new IllegalArgumentException("Book must not be null");
+        if (books.contains(book)) throw new IllegalArgumentException("Book already present in category");
         books.add(book);
-        book.setCategory(this); 
+        book.setCategory(this);
     }
 
-    public List<Book> getBooks() {
-        return books;
-    }
-    
+    public List<Book> getBooks() { return books; }
+
     public void removeBook(Book book) {
-    	if (book == null) {
-            throw new IllegalArgumentException("Book must not be null");
-        }
-    	
-    	if (!books.contains(book)) {
-            throw new IllegalArgumentException("Book not found in category");
-        }
+        if (book == null) throw new IllegalArgumentException("Book must not be null");
+        if (!books.contains(book)) throw new IllegalArgumentException("Book not found in category");
         books.remove(book);
         book.setCategory(null);
     }
