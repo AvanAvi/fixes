@@ -1,4 +1,9 @@
 package com.attsw.bookstore.web;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 
 import java.util.List;
 
@@ -22,5 +27,11 @@ public class BookRestController {
     @GetMapping
     public List<Book> all() {
         return repo.findAll();
+    }
+    
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Book create(@RequestBody Book book) {
+        return repo.save(book);
     }
 }

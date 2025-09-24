@@ -1,9 +1,14 @@
 package com.attsw.bookstore.web;
 
 import static org.mockito.Mockito.when;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.springframework.http.MediaType;
+
 
 import java.util.Arrays;
 
@@ -33,5 +38,31 @@ class BookRestControllerTest {
         mvc.perform(get("/api/books"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].title").value("Clean Code"));
+    }
+    
+    @Test
+    void shouldCreateBookViaPost() throws Exception {
+        Book toSave = Book.withTitle("Refactoring");
+        toSave.setAuthor("Martin Fowler");
+        toSave.setIsbn("0201485672");
+
+        Book saved = Book.withTitle("Refactoring");
+        saved.setId(1L);          // simulate DB assign
+        saved.setAuthor("Martin Fowler");
+        saved.setIsbn("0201485672");
+
+        when(repo.save(org.mockito.ArgumentMatchers.any(Book.class))).thenReturn(saved);
+
+        mvc.perform(post("/api/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "title": "Refactoring",
+                      "author": "Martin Fowler",
+                      "isbn": "0201485672"
+                    }
+                    """))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.title").value("Refactoring"));
     }
 }
