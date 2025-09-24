@@ -1,5 +1,6 @@
 package com.attsw.bookstore.web;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.attsw.bookstore.model.Book;
 import com.attsw.bookstore.repository.BookRepository;
-
+import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/books")
 public class BookRestController {
@@ -33,5 +34,10 @@ public class BookRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public Book create(@RequestBody Book book) {
         return repo.save(book);
+    }
+    
+    @GetMapping("/{id}")
+    public Book one(@PathVariable Long id) {
+        return repo.findById(id).orElseThrow();
     }
 }

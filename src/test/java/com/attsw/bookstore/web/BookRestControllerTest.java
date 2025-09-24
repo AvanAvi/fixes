@@ -1,6 +1,7 @@
 package com.attsw.bookstore.web;
 
 import static org.mockito.Mockito.when;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -64,5 +65,17 @@ class BookRestControllerTest {
                     """))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.title").value("Refactoring"));
+    }
+    
+    @Test
+    void shouldReturnSingleBookById() throws Exception {
+        Book saved = Book.withTitle("Clean Code");
+        saved.setId(1L);
+
+        when(repo.findById(1L)).thenReturn(Optional.of(saved));
+
+        mvc.perform(get("/api/books/1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.title").value("Clean Code"));
     }
 }
