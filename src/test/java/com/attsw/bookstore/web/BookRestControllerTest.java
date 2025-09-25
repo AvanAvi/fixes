@@ -3,6 +3,8 @@ package com.attsw.bookstore.web;
 import static org.mockito.Mockito.when;
 import java.util.Optional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -78,4 +80,27 @@ class BookRestControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.title").value("Clean Code"));
     }
+    
+    @Test
+    void shouldUpdateExistingBookViaPut() throws Exception {
+        Book existing = Book.withTitle("Old Title");
+        existing.setId(1L);
+
+        when(repo.findById(1L)).thenReturn(Optional.of(existing));
+        when(repo.save(org.mockito.ArgumentMatchers.any(Book.class))).thenAnswer(i -> i.getArgument(0));
+
+        mvc.perform(put("/api/books/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "title": "New Title",
+                      "author": "New Author",
+                      "isbn": "1111111111"
+                    }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.title").value("New Title"));
+    }
+    
+    
 }
