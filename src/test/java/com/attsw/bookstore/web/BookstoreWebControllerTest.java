@@ -1,5 +1,6 @@
 package com.attsw.bookstore.web;
 import java.util.Optional;
+import static org.mockito.Mockito.verify;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -90,5 +91,14 @@ class BookstoreWebControllerTest {
                 .param("isbn", "new456"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/books"));
+    }
+    
+    @Test
+    void shouldDeleteBookAndRedirectToList() throws Exception {
+        mvc.perform(post("/books/1/delete"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/books"));
+        
+        verify(repo).deleteById(1L);
     }
 }
