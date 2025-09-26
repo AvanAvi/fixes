@@ -1,4 +1,5 @@
 package com.attsw.bookstore.web;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.attsw.bookstore.model.Book;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,4 +38,12 @@ public class BookstoreWebController {
         repo.save(book);
         return "redirect:/books";
     }
+    
+    @GetMapping("/books/{id}/edit")
+    public String editBook(@PathVariable Long id, Model model) {
+        Book book = repo.findById(id).orElseThrow();
+        model.addAttribute("book", book);
+        return "books/edit";
+    }
+    
 }
