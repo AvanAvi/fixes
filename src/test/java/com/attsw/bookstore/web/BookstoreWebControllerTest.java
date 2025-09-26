@@ -1,6 +1,7 @@
 package com.attsw.bookstore.web;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -42,5 +43,20 @@ class BookstoreWebControllerTest {
             .andExpect(status().isOk())
             .andExpect(view().name("books/new"))
             .andExpect(model().attributeExists("book"));
+    }
+    
+    @Test
+    void shouldSaveBookAndRedirectToList() throws Exception {
+        Book saved = Book.withTitle("TDD");
+        saved.setId(1L);
+
+        when(repo.save(org.mockito.ArgumentMatchers.any(Book.class))).thenReturn(saved);
+
+        mvc.perform(post("/books")
+                .param("title", "TDD")
+                .param("author", "Kent")
+                .param("isbn", "123"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/books"));
     }
 }
