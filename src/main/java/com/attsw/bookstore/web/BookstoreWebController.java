@@ -46,4 +46,14 @@ public class BookstoreWebController {
         return "books/edit";
     }
     
+    @PostMapping("/books/{id}")
+    public String updateBook(@PathVariable Long id, Book book) {
+        Book existing = repo.findById(id).orElseThrow();
+        existing.setTitle(book.getTitle());
+        existing.setAuthor(book.getAuthor());
+        existing.setIsbn(book.getIsbn());
+        repo.save(existing);
+        return "redirect:/books";
+    }
+    
 }
