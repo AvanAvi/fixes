@@ -1,5 +1,7 @@
 package com.attsw.bookstore.web;
 
+import com.attsw.bookstore.model.Book;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,5 +23,11 @@ public class BookstoreWebController {
     public String listBooks(Model model) {
         model.addAttribute("books", repo.findAll());
         return "books/list";
+    }
+    
+    @GetMapping("/books/new")
+    public String newBook(Model model) {
+    	model.addAttribute("book", Book.withTitle(""));
+        return "books/new";
     }
 }
