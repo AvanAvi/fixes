@@ -35,4 +35,12 @@ class BookstoreWebControllerTest {
             .andExpect(view().name("books/list"))
             .andExpect(model().attributeExists("books"));
     }
+    
+    @Test
+    void shouldShowAddBookForm() throws Exception {
+        mvc.perform(get("/books/new"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("books/new"))
+            .andExpect(model().attributeExists("book"));
+    }
 }
