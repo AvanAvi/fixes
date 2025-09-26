@@ -3,6 +3,7 @@ package com.attsw.bookstore.web;
 import static org.mockito.Mockito.when;
 import java.util.Optional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -100,6 +101,17 @@ class BookRestControllerTest {
                     """))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.title").value("New Title"));
+    }
+    
+    @Test
+    void shouldDeleteBookViaDelete() throws Exception {
+        Book existing = Book.withTitle("To Delete");
+        existing.setId(1L);
+
+        when(repo.findById(1L)).thenReturn(Optional.of(existing));
+
+        mvc.perform(delete("/api/books/1"))
+            .andExpect(status().isNoContent());
     }
     
     
