@@ -1,6 +1,7 @@
 package com.attsw.bookstore.web;
 
 import com.attsw.bookstore.model.Book;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,5 +30,11 @@ public class BookstoreWebController {
     public String newBook(Model model) {
     	model.addAttribute("book", Book.withTitle(""));
         return "books/new";
+    }
+    
+    @PostMapping("/books")
+    public String saveBook(Book book) {
+        repo.save(book);
+        return "redirect:/books";
     }
 }
