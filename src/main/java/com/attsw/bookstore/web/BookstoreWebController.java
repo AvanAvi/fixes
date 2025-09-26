@@ -56,4 +56,9 @@ public class BookstoreWebController {
         return "redirect:/books";
     }
     
+    @PostMapping("/books/{id}/delete")
+    public String deleteBook(@PathVariable Long id) {
+        repo.deleteById(id);
+        return "redirect:/books";
+    }
 }
