@@ -1,4 +1,5 @@
 package com.attsw.bookstore.web;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,5 +59,18 @@ class BookstoreWebControllerTest {
                 .param("isbn", "123"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/books"));
+    }
+    
+    @Test
+    void shouldShowEditBookForm() throws Exception {
+        Book existing = Book.withTitle("Clean Code");
+        existing.setId(1L);
+
+        when(repo.findById(1L)).thenReturn(Optional.of(existing));
+
+        mvc.perform(get("/books/1/edit"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("books/edit"))
+            .andExpect(model().attributeExists("book"));
     }
 }
