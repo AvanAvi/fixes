@@ -73,4 +73,22 @@ class BookstoreWebControllerTest {
             .andExpect(view().name("books/edit"))
             .andExpect(model().attributeExists("book"));
     }
+    
+    @Test
+    void shouldUpdateBookAndRedirectToList() throws Exception {
+        Book existing = Book.withTitle("Old Title");
+        existing.setId(1L);
+        existing.setAuthor("Old Author");
+        existing.setIsbn("old123");
+
+        when(repo.findById(1L)).thenReturn(Optional.of(existing));
+        when(repo.save(org.mockito.ArgumentMatchers.any(Book.class))).thenReturn(existing);
+
+        mvc.perform(post("/books/1")
+                .param("title", "Updated Title")
+                .param("author", "Updated Author")
+                .param("isbn", "new456"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/books"));
+    }
 }
