@@ -16,11 +16,13 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private final List<Book> books = new ArrayList<>();
 
-    protected Category() {}
+    public Category() {}
 
     public Long getId() { return id; }
 
     public void setName(String name) { this.name = name; }
+    
+    public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
 
