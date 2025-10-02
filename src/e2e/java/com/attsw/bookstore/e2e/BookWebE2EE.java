@@ -1,4 +1,4 @@
-package com.attsw.bookstore.e2e;
+package com.attsw.bookstore.e2e;                         // ← already correct
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,11 +17,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
-class BookWebE2ET {
+class BookWebE2EE {                                       // ← NEW class name
 
     @Container
     static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:5.7")
-   // static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test");
