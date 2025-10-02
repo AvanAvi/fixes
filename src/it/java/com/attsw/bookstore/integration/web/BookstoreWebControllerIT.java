@@ -1,7 +1,8 @@
-package com.attsw.bookstore.integration.web;         
-import com.attsw.bookstore.web.BookstoreWebController;
+package com.attsw.bookstore.integration.web;
 
-import java.util.Optional;
+import com.attsw.bookstore.web.BookstoreWebController;
+import com.attsw.bookstore.service.BookService;
+
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,26 +14,24 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.attsw.bookstore.model.Book;
-import com.attsw.bookstore.repository.BookRepository;
 
 @WebMvcTest(BookstoreWebController.class)
-class BookstoreWebControllerIT {                      
+class BookstoreWebControllerIT {
 
     @Autowired
     private MockMvc mvc;
 
     @MockitoBean
-    private BookRepository repo;
+    private BookService bookService;
 
     @Test
     void shouldShowBookListPage() throws Exception {
         Book b = Book.withTitle("Clean Code");
-        when(repo.findAll()).thenReturn(Arrays.asList(b));
+        when(bookService.getAllBooks()).thenReturn(Arrays.asList(b));
 
         mvc.perform(get("/books"))
             .andExpect(status().isOk())
@@ -53,7 +52,7 @@ class BookstoreWebControllerIT {
         Book saved = Book.withTitle("TDD");
         saved.setId(1L);
 
-        when(repo.save(org.mockito.ArgumentMatchers.any(Book.class))).thenReturn(saved);
+        when(bookService.saveBook(org.mockito.ArgumentMatchers.any(Book.class))).thenReturn(saved);
 
         mvc.perform(post("/books")
                 .param("title", "TDD")
@@ -68,7 +67,7 @@ class BookstoreWebControllerIT {
         Book existing = Book.withTitle("Clean Code");
         existing.setId(1L);
 
-        when(repo.findById(1L)).thenReturn(Optional.of(existing));
+        when(bookService.getBookById(1L)).thenReturn(existing);
 
         mvc.perform(get("/books/1/edit"))
             .andExpect(status().isOk())
@@ -78,13 +77,10 @@ class BookstoreWebControllerIT {
 
     @Test
     void shouldUpdateBookAndRedirectToList() throws Exception {
-        Book existing = Book.withTitle("Old Title");
-        existing.setId(1L);
-        existing.setAuthor("Old Author");
-        existing.setIsbn("old123");
+        Book updated = Book.withTitle("Updated Title");
+        updated.setId(1L);
 
-        when(repo.findById(1L)).thenReturn(Optional.of(existing));
-        when(repo.save(org.mockito.ArgumentMatchers.any(Book.class))).thenReturn(existing);
+        when(bookService.updateBook(org.mockito.ArgumentMatchers.eq(1L), org.mockito.ArgumentMatchers.any(Book.class))).thenReturn(updated);
 
         mvc.perform(post("/books/1")
                 .param("title", "Updated Title")
@@ -100,6 +96,6 @@ class BookstoreWebControllerIT {
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/books"));
 
-        verify(repo).deleteById(1L);
+        verify(bookService).deleteBook(1L);
     }
 }
