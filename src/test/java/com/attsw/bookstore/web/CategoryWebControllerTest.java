@@ -63,4 +63,13 @@ class CategoryWebControllerTest {
            .andExpect(view().name("categories/edit"))
            .andExpect(model().attribute("category", c));
     }
+    @Test
+    void shouldUpdateCategoryAndRedirect() throws Exception {
+        mvc.perform(post("/categories/7")
+                   .param("name", "Updated Name"))
+           .andExpect(status().is3xxRedirection())
+           .andExpect(redirectedUrl("/categories"));
+
+        verify(categoryService).saveCategory(any(Category.class));
+    }
 }
