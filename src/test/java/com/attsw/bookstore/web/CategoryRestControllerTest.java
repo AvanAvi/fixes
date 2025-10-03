@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.attsw.bookstore.model.Category;
 import com.attsw.bookstore.service.CategoryService;
+import org.springframework.http.MediaType;
 
 @WebMvcTest(CategoryRestController.class)
 class CategoryRestControllerTest {
@@ -31,5 +32,19 @@ class CategoryRestControllerTest {
         mvc.perform(get("/api/categories"))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$[0].name").value("Fiction"));
+    }
+    @Test
+    void shouldCreateCategory() throws Exception {
+        Category saved = new Category();
+        saved.setId(1L);
+        saved.setName("Science");
+
+        when(categoryService.saveCategory(any(Category.class))).thenReturn(saved);
+
+        mvc.perform(post("/api/categories")
+                   .contentType(MediaType.APPLICATION_JSON)
+                   .content("{\"name\":\"Science\"}"))
+           .andExpect(status().isCreated())
+           .andExpect(jsonPath("$.id").value(1L));
     }
 }
