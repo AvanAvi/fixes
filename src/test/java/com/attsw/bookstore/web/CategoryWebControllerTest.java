@@ -50,4 +50,17 @@ class CategoryWebControllerTest {
 
         verify(categoryService).saveCategory(any(Category.class));
     }
+    
+    @Test
+    void shouldShowEditForm() throws Exception {
+        Category c = new Category();
+        c.setId(5L);
+        c.setName("Science");
+        when(categoryService.getCategoryById(5L)).thenReturn(c);
+
+        mvc.perform(get("/categories/5/edit"))
+           .andExpect(status().isOk())
+           .andExpect(view().name("categories/edit"))
+           .andExpect(model().attribute("category", c));
+    }
 }
