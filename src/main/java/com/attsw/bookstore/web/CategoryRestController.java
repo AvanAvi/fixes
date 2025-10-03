@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import com.attsw.bookstore.model.Category;
 import com.attsw.bookstore.service.CategoryService;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -43,5 +44,11 @@ public class CategoryRestController {
     public Category update(@PathVariable Long id, @RequestBody Category category) {
         category.setId(id);
         return categoryService.saveCategory(category);
+    }
+    
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
     }
 }
