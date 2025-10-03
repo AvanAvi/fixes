@@ -72,4 +72,13 @@ class CategoryWebControllerTest {
 
         verify(categoryService).saveCategory(any(Category.class));
     }
+    
+    @Test
+    void shouldDeleteCategoryAndRedirect() throws Exception {
+        mvc.perform(post("/categories/9/delete"))
+           .andExpect(status().is3xxRedirection())
+           .andExpect(redirectedUrl("/categories"));
+
+        verify(categoryService).deleteCategory(9L);
+    }
 }
