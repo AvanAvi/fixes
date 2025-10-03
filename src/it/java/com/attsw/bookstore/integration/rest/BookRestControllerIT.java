@@ -2,7 +2,6 @@ package com.attsw.bookstore.integration.rest;
 import com.attsw.bookstore.web.BookRestController;
 
 import static org.mockito.Mockito.when;
-import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -17,26 +16,25 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.attsw.bookstore.model.Book;
-import com.attsw.bookstore.repository.BookRepository;
+import com.attsw.bookstore.service.BookService;
 
 @WebMvcTest(BookRestController.class)
-class BookRestControllerIT {                            // ← NEW class name
+class BookRestControllerIT {
 
     @Autowired
     private MockMvc mvc;
 
     @MockitoBean
-    private BookRepository repo;
+    private BookService bookService;
 
     @Test
     void shouldReturnJsonListOfBooks() throws Exception {
         Book b = Book.withTitle("Clean Code");
-        when(repo.findAll()).thenReturn(Arrays.asList(b));
+        when(bookService.getAllBooks()).thenReturn(Arrays.asList(b));
 
         mvc.perform(get("/api/books"))
             .andExpect(status().isOk())
@@ -45,16 +43,12 @@ class BookRestControllerIT {                            // ← NEW class name
 
     @Test
     void shouldCreateBookViaPost() throws Exception {
-        Book toSave = Book.withTitle("Refactoring");
-        toSave.setAuthor("Martin Fowler");
-        toSave.setIsbn("0201485672");
-
         Book saved = Book.withTitle("Refactoring");
         saved.setId(1L);
         saved.setAuthor("Martin Fowler");
         saved.setIsbn("0201485672");
 
-        when(repo.save(org.mockito.ArgumentMatchers.any(Book.class))).thenReturn(saved);
+        when(bookService.saveBook(org.mockito.ArgumentMatchers.any(Book.class))).thenReturn(saved);
 
         mvc.perform(post("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -74,7 +68,7 @@ class BookRestControllerIT {                            // ← NEW class name
         Book saved = Book.withTitle("Clean Code");
         saved.setId(1L);
 
-        when(repo.findById(1L)).thenReturn(Optional.of(saved));
+        when(bookService.getBookById(1L)).thenReturn(saved);
 
         mvc.perform(get("/api/books/1"))
             .andExpect(status().isOk())
@@ -83,11 +77,12 @@ class BookRestControllerIT {                            // ← NEW class name
 
     @Test
     void shouldUpdateExistingBookViaPut() throws Exception {
-        Book existing = Book.withTitle("Old Title");
-        existing.setId(1L);
+        Book updated = Book.withTitle("New Title");
+        updated.setId(1L);
+        updated.setAuthor("New Author");
+        updated.setIsbn("1111111111");
 
-        when(repo.findById(1L)).thenReturn(Optional.of(existing));
-        when(repo.save(org.mockito.ArgumentMatchers.any(Book.class))).thenAnswer(i -> i.getArgument(0));
+        when(bookService.updateBook(org.mockito.ArgumentMatchers.eq(1L), org.mockito.ArgumentMatchers.any(Book.class))).thenReturn(updated);
 
         mvc.perform(put("/api/books/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -104,11 +99,6 @@ class BookRestControllerIT {                            // ← NEW class name
 
     @Test
     void shouldDeleteBookViaDelete() throws Exception {
-        Book existing = Book.withTitle("To Delete");
-        existing.setId(1L);
-
-        when(repo.findById(1L)).thenReturn(Optional.of(existing));
-
         mvc.perform(delete("/api/books/1"))
             .andExpect(status().isNoContent());
     }

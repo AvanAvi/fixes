@@ -5,24 +5,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.attsw.bookstore.model.Book;
-import com.attsw.bookstore.repository.BookRepository;
+import com.attsw.bookstore.service.BookService;
 
 @WebMvcTest(BookRestController.class)
 class BookRestControllerTest {
 
     @Autowired private MockMvc mvc;
-    @MockitoBean   private BookRepository repo;
+    @MockitoBean private BookService bookService;
 
     /* GET /api/books */
     @Test
@@ -30,7 +28,7 @@ class BookRestControllerTest {
         Book b = new Book();
         b.setId(1L);
         b.setTitle("Clean Code");
-        when(repo.findAll()).thenReturn(List.of(b));
+        when(bookService.getAllBooks()).thenReturn(List.of(b));
 
         mvc.perform(get("/api/books"))
            .andExpect(status().isOk())
@@ -44,7 +42,7 @@ class BookRestControllerTest {
         saved.setId(1L);
         saved.setTitle("Refactoring");
 
-        when(repo.save(any(Book.class))).thenReturn(saved);
+        when(bookService.saveBook(any(Book.class))).thenReturn(saved);
 
         mvc.perform(post("/api/books")
                    .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +57,7 @@ class BookRestControllerTest {
         Book b = new Book();
         b.setId(2L);
         b.setTitle("Effective Java");
-        when(repo.findById(2L)).thenReturn(Optional.of(b));
+        when(bookService.getBookById(2L)).thenReturn(b);
 
         mvc.perform(get("/api/books/2"))
            .andExpect(status().isOk())
@@ -69,12 +67,11 @@ class BookRestControllerTest {
     /* PUT /api/books/{id} */
     @Test
     void shouldUpdateBook() throws Exception {
-        Book existing = new Book();
-        existing.setId(3L);
-        existing.setTitle("Old");
+        Book updated = new Book();
+        updated.setId(3L);
+        updated.setTitle("New");
 
-        when(repo.findById(3L)).thenReturn(Optional.of(existing));
-        when(repo.save(any(Book.class))).thenReturn(existing); 
+        when(bookService.updateBook(eq(3L), any(Book.class))).thenReturn(updated);
 
         mvc.perform(put("/api/books/3")
                    .contentType(MediaType.APPLICATION_JSON)
@@ -86,7 +83,7 @@ class BookRestControllerTest {
     /* DELETE /api/books/{id} */
     @Test
     void shouldDeleteBook() throws Exception {
-        doNothing().when(repo).deleteById(4L);
+        doNothing().when(bookService).deleteBook(4L);
 
         mvc.perform(delete("/api/books/4"))
            .andExpect(status().isNoContent());
