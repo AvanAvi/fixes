@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import com.attsw.bookstore.model.Category;
 import com.attsw.bookstore.service.CategoryService;
@@ -27,5 +28,10 @@ public class CategoryWebController {
     public String newCategory(Model model) {
         model.addAttribute("category", new Category());
         return "categories/new";
+    }
+    @PostMapping("/categories")
+    public String saveCategory(Category category) {
+        categoryService.saveCategory(category);
+        return "redirect:/categories";
     }
 }
