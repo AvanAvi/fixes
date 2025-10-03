@@ -40,4 +40,14 @@ class CategoryWebControllerTest {
            .andExpect(view().name("categories/new"))
            .andExpect(model().attributeExists("category"));
     }
+    
+    @Test
+    void shouldSaveCategoryAndRedirect() throws Exception {
+        mvc.perform(post("/categories")
+                   .param("name", "Fiction"))
+           .andExpect(status().is3xxRedirection())
+           .andExpect(redirectedUrl("/categories"));
+
+        verify(categoryService).saveCategory(any(Category.class));
+    }
 }
