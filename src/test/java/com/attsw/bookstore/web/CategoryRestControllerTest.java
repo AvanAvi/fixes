@@ -47,4 +47,16 @@ class CategoryRestControllerTest {
            .andExpect(status().isCreated())
            .andExpect(jsonPath("$.id").value(1L));
     }
+    
+    @Test
+    void shouldReturnSingleCategory() throws Exception {
+        Category c = new Category();
+        c.setId(2L);
+        c.setName("History");
+        when(categoryService.getCategoryById(2L)).thenReturn(c);
+
+        mvc.perform(get("/api/categories/2"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.name").value("History"));
+    }
 }
