@@ -1,0 +1,35 @@
+package com.attsw.bookstore.web;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.attsw.bookstore.model.Category;
+import com.attsw.bookstore.service.CategoryService;
+
+@WebMvcTest(CategoryRestController.class)
+class CategoryRestControllerTest {
+
+    @Autowired private MockMvc mvc;
+    @MockitoBean private CategoryService categoryService;
+
+    @Test
+    void shouldReturnAllCategories() throws Exception {
+        Category c = new Category();
+        c.setId(1L);
+        c.setName("Fiction");
+        when(categoryService.getAllCategories()).thenReturn(List.of(c));
+
+        mvc.perform(get("/api/categories"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$[0].name").value("Fiction"));
+    }
+}
