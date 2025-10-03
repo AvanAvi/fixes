@@ -41,4 +41,10 @@ public class CategoryWebController {
         model.addAttribute("category", category);
         return "categories/edit";
     }
+    @PostMapping("/categories/{id}")
+    public String updateCategory(@PathVariable Long id, Category category) {
+        category.setId(id);
+        categoryService.saveCategory(category);
+        return "redirect:/categories";
+    }
 }
