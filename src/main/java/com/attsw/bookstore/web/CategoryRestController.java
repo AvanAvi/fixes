@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.List;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.attsw.bookstore.model.Category;
 import com.attsw.bookstore.service.CategoryService;
@@ -31,5 +32,10 @@ public class CategoryRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public Category create(@RequestBody Category category) {
         return categoryService.saveCategory(category);
+    }
+    
+    @GetMapping("/{id}")
+    public Category one(@PathVariable Long id) {
+        return categoryService.getCategoryById(id);
     }
 }
