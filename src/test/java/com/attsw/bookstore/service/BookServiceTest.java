@@ -88,4 +88,15 @@ class BookServiceTest {
         service.deleteBook(1L);
         verify(repository).deleteById(1L);
     }
+
+    @Test
+    void updateBook_whenNotFound_returnsNull() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        Book result = service.updateBook(99L, Book.withTitle(""));
+
+        assertNull(result);
+        verify(repository).findById(99L);
+        verifyNoMoreInteractions(repository);
+    }
 }
