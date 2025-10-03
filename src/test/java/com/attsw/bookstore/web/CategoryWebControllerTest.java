@@ -33,4 +33,11 @@ class CategoryWebControllerTest {
            .andExpect(view().name("categories/list"))
            .andExpect(model().attribute("categories", List.of(c)));
     }
+    @Test
+    void shouldShowNewCategoryForm() throws Exception {
+        mvc.perform(get("/categories/new"))
+           .andExpect(status().isOk())
+           .andExpect(view().name("categories/new"))
+           .andExpect(model().attributeExists("category"));
+    }
 }
