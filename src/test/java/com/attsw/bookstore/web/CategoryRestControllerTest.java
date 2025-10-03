@@ -59,4 +59,19 @@ class CategoryRestControllerTest {
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.name").value("History"));
     }
+    
+    @Test
+    void shouldUpdateCategory() throws Exception {
+        Category updated = new Category();
+        updated.setId(3L);
+        updated.setName("Updated");
+
+        when(categoryService.saveCategory(any(Category.class))).thenReturn(updated);
+
+        mvc.perform(put("/api/categories/3")
+                   .contentType(MediaType.APPLICATION_JSON)
+                   .content("{\"name\":\"Updated\"}"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.name").value("Updated"));
+    }
 }
