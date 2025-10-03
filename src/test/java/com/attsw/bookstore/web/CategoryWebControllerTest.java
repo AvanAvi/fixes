@@ -1,0 +1,36 @@
+package com.attsw.bookstore.web;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.attsw.bookstore.model.Category;
+import com.attsw.bookstore.service.CategoryService;
+
+@WebMvcTest(CategoryWebController.class)
+class CategoryWebControllerTest {
+
+    @Autowired private MockMvc mvc;
+    @MockitoBean   private CategoryService categoryService;
+
+    @Test
+    void shouldShowCategoryList() throws Exception {
+        Category c = new Category();
+        c.setId(1L);
+        c.setName("Software");
+        when(categoryService.getAllCategories()).thenReturn(List.of(c));
+
+        mvc.perform(get("/categories"))
+           .andExpect(status().isOk())
+           .andExpect(view().name("categories/list"))
+           .andExpect(model().attribute("categories", List.of(c)));
+    }
+}

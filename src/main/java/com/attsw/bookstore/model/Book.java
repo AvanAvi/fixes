@@ -19,9 +19,9 @@ public class Book {
     @ManyToOne
     private Category category;
 
-    Book() {}                       // package-private for JPA
+    public Book() {}                       // package-private for JPA
 
-    /* ---- factory helper for tests (book §3.5) ---- */
+    
     public static Book withTitle(String title) {
         Book b = new Book();
         b.setTitle(title);
