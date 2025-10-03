@@ -1,29 +1,36 @@
 package com.attsw.bookstore.service;
 
 import java.util.List;
-import com.attsw.bookstore.model.Category;
 import org.springframework.stereotype.Service;
+import com.attsw.bookstore.model.Category;
+import com.attsw.bookstore.repository.CategoryRepository;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
+    private final CategoryRepository repository;
+
+    public CategoryServiceImpl(CategoryRepository repository) {
+        this.repository = repository;
+    }
+
     @Override
     public List<Category> getAllCategories() {
-        throw new UnsupportedOperationException("TODO – RED phase");
+        return repository.findAll();
     }
 
     @Override
     public Category getCategoryById(Long id) {
-        throw new UnsupportedOperationException("TODO – RED phase");
+        return repository.findById(id).orElse(null);
     }
 
     @Override
     public Category saveCategory(Category category) {
-        throw new UnsupportedOperationException("TODO – RED phase");
+        return repository.save(category);
     }
 
     @Override
     public void deleteCategory(Long id) {
-        throw new UnsupportedOperationException("TODO – RED phase");
+        repository.deleteById(id);
     }
 }
