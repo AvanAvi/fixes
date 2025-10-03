@@ -23,4 +23,9 @@ public class CategoryWebController {
         model.addAttribute("categories", categories);
         return "categories/list";
     }
+    @GetMapping("/categories/new")
+    public String newCategory(Model model) {
+        model.addAttribute("category", new Category());
+        return "categories/new";
+    }
 }
