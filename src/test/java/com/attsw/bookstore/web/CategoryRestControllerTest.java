@@ -74,4 +74,11 @@ class CategoryRestControllerTest {
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.name").value("Updated"));
     }
+    @Test
+    void shouldDeleteCategory() throws Exception {
+        doNothing().when(categoryService).deleteCategory(4L);
+
+        mvc.perform(delete("/api/categories/4"))
+           .andExpect(status().isNoContent());
+    }
 }
