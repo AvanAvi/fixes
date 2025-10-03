@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.attsw.bookstore.model.Category;
 import com.attsw.bookstore.service.CategoryService;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class CategoryWebController {
@@ -33,5 +34,11 @@ public class CategoryWebController {
     public String saveCategory(Category category) {
         categoryService.saveCategory(category);
         return "redirect:/categories";
+    }
+    @GetMapping("/categories/{id}/edit")
+    public String editCategory(@PathVariable Long id, Model model) {
+        Category category = categoryService.getCategoryById(id);
+        model.addAttribute("category", category);
+        return "categories/edit";
     }
 }
