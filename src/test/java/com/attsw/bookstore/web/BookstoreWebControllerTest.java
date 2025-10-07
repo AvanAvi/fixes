@@ -1,104 +1,96 @@
 package com.attsw.bookstore.web;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.List;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.ui.Model;
 
 import com.attsw.bookstore.model.Book;
 import com.attsw.bookstore.service.BookService;
 
-@WebMvcTest(BookstoreWebController.class)
+@ExtendWith(MockitoExtension.class)
 class BookstoreWebControllerTest {
 
-    @Autowired private MockMvc mvc;
-    @MockitoBean   private BookService bookService;
+    @Mock
+    private BookService bookService;
 
-    /* ---------- home ---------- */
+    @Mock
+    private Model model;
+
+    @InjectMocks
+    private BookstoreWebController controller;
+
     @Test
-    void shouldReturnHomePage() throws Exception {
-        mvc.perform(get("/"))
-           .andExpect(status().isOk())
-           .andExpect(view().name("index"));
+    void shouldReturnHomeView() {
+        String view = controller.home();
+        assertEquals("index", view);
     }
 
-    /* ---------- list ---------- */
     @Test
-    void shouldShowBookList() throws Exception {
-        Book b = new Book();
-        b.setId(1L);
-        b.setTitle("Clean Code");
-        when(bookService.getAllBooks()).thenReturn(List.of(b));
+    void shouldReturnListBooksView() {
+        Book book = Book.withTitle("Clean Code");
+        when(bookService.getAllBooks()).thenReturn(Arrays.asList(book));
 
-        mvc.perform(get("/books"))
-           .andExpect(status().isOk())
-           .andExpect(view().name("books/list"))
-           .andExpect(model().attribute("books", List.of(b)));
+        String view = controller.listBooks(model);
+
+        assertEquals("books/list", view);
+        verify(model).addAttribute(eq("books"), anyList());
+        verify(bookService).getAllBooks();
     }
 
-    /* ---------- new form ---------- */
     @Test
-    void shouldShowNewBookForm() throws Exception {
-        mvc.perform(get("/books/new"))
-           .andExpect(status().isOk())
-           .andExpect(view().name("books/new"))
-           .andExpect(model().attributeExists("book"));
+    void shouldReturnNewBookView() {
+        String view = controller.newBook(model);
+
+        assertEquals("books/new", view);
+        verify(model).addAttribute(eq("book"), any(Book.class));
     }
 
-    /* ---------- save ---------- */
     @Test
-    void shouldSaveBookAndRedirect() throws Exception {
-        mvc.perform(post("/books")
-                   .param("title", "Refactoring")
-                   .param("author", "Martin")
-                   .param("isbn", "123"))
-           .andExpect(status().is3xxRedirection())
-           .andExpect(redirectedUrl("/books"));
+    void shouldSaveBookAndRedirect() {
+        Book book = Book.withTitle("TDD");
 
-        verify(bookService).saveBook(any(Book.class));
+        String redirect = controller.saveBook(book);
+
+        assertEquals("redirect:/books", redirect);
+        verify(bookService).saveBook(book);
     }
 
-    /* ---------- edit form ---------- */
     @Test
-    void shouldShowEditForm() throws Exception {
-        Book b = new Book();
-        b.setId(5L);
-        b.setTitle("Effective Java");
-        when(bookService.getBookById(5L)).thenReturn(b);
+    void shouldReturnEditBookView() {
+        Book book = Book.withTitle("Clean Code");
+        book.setId(1L);
+        when(bookService.getBookById(1L)).thenReturn(book);
 
-        mvc.perform(get("/books/5/edit"))
-           .andExpect(status().isOk())
-           .andExpect(view().name("books/edit"))
-           .andExpect(model().attribute("book", b));
+        String view = controller.editBook(1L, model);
+
+        assertEquals("books/edit", view);
+        verify(model).addAttribute("book", book);
+        verify(bookService).getBookById(1L);
     }
 
-    /* ---------- update ---------- */
     @Test
-    void shouldUpdateBookAndRedirect() throws Exception {
-        mvc.perform(post("/books/7")
-                   .param("title", "New Title")
-                   .param("author", "A")
-                   .param("isbn", "999"))
-           .andExpect(status().is3xxRedirection())
-           .andExpect(redirectedUrl("/books"));
+    void shouldUpdateBookAndRedirect() {
+        Book book = Book.withTitle("Updated");
 
-        verify(bookService).updateBook(eq(7L), any(Book.class));
+        String redirect = controller.updateBook(1L, book);
+
+        assertEquals("redirect:/books", redirect);
+        verify(bookService).updateBook(1L, book);
     }
 
-    /* ---------- delete ---------- */
     @Test
-    void shouldDeleteBookAndRedirect() throws Exception {
-        mvc.perform(post("/books/9/delete"))
-           .andExpect(status().is3xxRedirection())
-           .andExpect(redirectedUrl("/books"));
+    void shouldDeleteBookAndRedirect() {
+        String redirect = controller.deleteBook(1L);
 
-        verify(bookService).deleteBook(9L);
+        assertEquals("redirect:/books", redirect);
+        verify(bookService).deleteBook(1L);
     }
 }

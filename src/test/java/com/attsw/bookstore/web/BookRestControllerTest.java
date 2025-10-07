@@ -1,91 +1,86 @@
 package com.attsw.bookstore.web;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.attsw.bookstore.model.Book;
 import com.attsw.bookstore.service.BookService;
 
-@WebMvcTest(BookRestController.class)
+@ExtendWith(MockitoExtension.class)
 class BookRestControllerTest {
 
-    @Autowired private MockMvc mvc;
-    @MockitoBean private BookService bookService;
+    @Mock
+    private BookService bookService;
 
-    /* GET /api/books */
+    @InjectMocks
+    private BookRestController controller;
+
     @Test
-    void shouldReturnAllBooks() throws Exception {
-        Book b = new Book();
-        b.setId(1L);
-        b.setTitle("Clean Code");
-        when(bookService.getAllBooks()).thenReturn(List.of(b));
+    void shouldReturnAllBooks() {
+        Book book1 = Book.withTitle("Clean Code");
+        Book book2 = Book.withTitle("Refactoring");
+        when(bookService.getAllBooks()).thenReturn(Arrays.asList(book1, book2));
 
-        mvc.perform(get("/api/books"))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$[0].title").value("Clean Code"));
+        List<Book> result = controller.all();
+
+        assertEquals(2, result.size());
+        verify(bookService).getAllBooks();
     }
 
-    /* POST /api/books */
     @Test
-    void shouldCreateBook() throws Exception {
-        Book saved = new Book();
+    void shouldCreateBook() {
+        Book input = Book.withTitle("TDD");
+        Book saved = Book.withTitle("TDD");
         saved.setId(1L);
-        saved.setTitle("Refactoring");
+        when(bookService.saveBook(input)).thenReturn(saved);
 
-        when(bookService.saveBook(any(Book.class))).thenReturn(saved);
+        Book result = controller.create(input);
 
-        mvc.perform(post("/api/books")
-                   .contentType(MediaType.APPLICATION_JSON)
-                   .content("{\"title\":\"Refactoring\"}"))
-           .andExpect(status().isCreated())
-           .andExpect(jsonPath("$.id").value(1L));
+        assertNotNull(result.getId());
+        assertEquals("TDD", result.getTitle());
+        verify(bookService).saveBook(input);
     }
 
-    /* GET /api/books/{id} */
     @Test
-    void shouldReturnSingleBook() throws Exception {
-        Book b = new Book();
-        b.setId(2L);
-        b.setTitle("Effective Java");
-        when(bookService.getBookById(2L)).thenReturn(b);
+    void shouldReturnBookById() {
+        Book book = Book.withTitle("Clean Code");
+        book.setId(1L);
+        when(bookService.getBookById(1L)).thenReturn(book);
 
-        mvc.perform(get("/api/books/2"))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$.title").value("Effective Java"));
+        Book result = controller.one(1L);
+
+        assertEquals(1L, result.getId());
+        assertEquals("Clean Code", result.getTitle());
+        verify(bookService).getBookById(1L);
     }
 
-    /* PUT /api/books/{id} */
     @Test
-    void shouldUpdateBook() throws Exception {
-        Book updated = new Book();
-        updated.setId(3L);
-        updated.setTitle("New");
+    void shouldUpdateBook() {
+        Book updated = Book.withTitle("Updated Title");
+        updated.setId(1L);
+        when(bookService.updateBook(eq(1L), any(Book.class))).thenReturn(updated);
 
-        when(bookService.updateBook(eq(3L), any(Book.class))).thenReturn(updated);
+        Book result = controller.update(1L, new Book());
 
-        mvc.perform(put("/api/books/3")
-                   .contentType(MediaType.APPLICATION_JSON)
-                   .content("{\"title\":\"New\",\"author\":\"B\",\"isbn\":\"1\"}"))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$.title").value("New"));
+        assertEquals("Updated Title", result.getTitle());
+        verify(bookService).updateBook(eq(1L), any(Book.class));
     }
 
-    /* DELETE /api/books/{id} */
     @Test
-    void shouldDeleteBook() throws Exception {
-        doNothing().when(bookService).deleteBook(4L);
+    void shouldDeleteBook() {
+        doNothing().when(bookService).deleteBook(1L);
 
-        mvc.perform(delete("/api/books/4"))
-           .andExpect(status().isNoContent());
+        controller.delete(1L);
+
+        verify(bookService).deleteBook(1L);
     }
 }

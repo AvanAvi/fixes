@@ -85,6 +85,59 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <!-- ========== PIT Mutation Testing ========== -->
+        <plugin>
+          <groupId>org.pitest</groupId>
+          <artifactId>pitest-maven</artifactId>
+          <version>1.15.0</version>
+          <configuration>
+            <targetClasses>
+              <param>com.attsw.bookstore.service.*</param>
+              <param>com.attsw.bookstore.web.*</param>
+            </targetClasses>
+            <targetTests>
+              <param>com.attsw.bookstore.service.*Test</param>
+              <param>com.attsw.bookstore.web.*Test</param>
+            </targetTests>
+            <excludedTestClasses>
+              <param>**/*IT</param>
+              <param>**/*E2E</param>
+              <param>**/*RepositoryTest</param>
+            </excludedTestClasses>
+            <excludedClasses>
+              <param>com.attsw.bookstore.repository.*</param>
+              <param>**/*IT</param>
+              <param>**/*E2E</param>
+            </excludedClasses>
+            <excludedMethods>
+              <param>*toString</param>
+              <param>*hashCode</param>
+            </excludedMethods>
+            <avoidCallsTo>
+              <avoidCallsTo>java.util.logging</avoidCallsTo>
+              <avoidCallsTo>org.apache.log4j</avoidCallsTo>
+              <avoidCallsTo>org.slf4j</avoidCallsTo>
+              <avoidCallsTo>org.apache.commons.logging</avoidCallsTo>
+            </avoidCallsTo>
+            <mutators>
+              <mutator>DEFAULTS</mutator>
+            </mutators>
+            <mutationThreshold>100</mutationThreshold>
+            <outputFormats>
+              <outputFormat>HTML</outputFormat>
+              <outputFormat>XML</outputFormat>
+            </outputFormats>
+            <verbose>true</verbose>
+            <threads>2</threads>
+            <timeoutConstant>4000</timeoutConstant>
+            <timestampedReports>false</timestampedReports>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
       <!-- Build Helper: MOVED HERE from profile - always active -->
       <plugin>
@@ -153,11 +206,11 @@
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.8.11</version>
         <configuration>
-    	  <excludes>
-      	 	 <exclude>**/BookstoreManagementTddApplication.*</exclude>
-      		 <exclude>**/model/**</exclude>
-    	  </excludes>
-  		</configuration>
+          <excludes>
+            <exclude>**/BookstoreManagementTddApplication.*</exclude>
+            <exclude>**/model/**</exclude>
+          </excludes>
+        </configuration>
         <executions>
           <execution>
             <goals>
@@ -208,6 +261,50 @@
                 <include>**/*E2E.java</include>
               </includes>
             </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- ========== Mutation-Testing Profile ========== -->
+    <profile>
+      <id>mutation-testing</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <skip.integration-tests>true</skip.integration-tests>
+      </properties>
+      <build>
+        <plugins>
+          <!-- Skip Failsafe during mutation testing -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+
+          <!-- PIT Mutation Testing -->
+          <plugin>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-maven</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>mutationCoverage</goal>
+                </goals>
+                <phase>verify</phase>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-junit5-plugin</artifactId>
+                <version>1.2.2</version>
+              </dependency>
+            </dependencies>
           </plugin>
         </plugins>
       </build>

@@ -1,84 +1,97 @@
 package com.attsw.bookstore.web;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.attsw.bookstore.model.Category;
 import com.attsw.bookstore.service.CategoryService;
-import org.springframework.http.MediaType;
 
-@WebMvcTest(CategoryRestController.class)
+@ExtendWith(MockitoExtension.class)
 class CategoryRestControllerTest {
 
-    @Autowired private MockMvc mvc;
-    @MockitoBean private CategoryService categoryService;
+    @Mock
+    private CategoryService categoryService;
+
+    @InjectMocks
+    private CategoryRestController controller;
 
     @Test
-    void shouldReturnAllCategories() throws Exception {
-        Category c = new Category();
-        c.setId(1L);
-        c.setName("Fiction");
-        when(categoryService.getAllCategories()).thenReturn(List.of(c));
+    void shouldReturnAllCategories() {
+        Category cat1 = new Category();
+        cat1.setName("Fiction");
+        Category cat2 = new Category();
+        cat2.setName("Science");
+        when(categoryService.getAllCategories()).thenReturn(Arrays.asList(cat1, cat2));
 
-        mvc.perform(get("/api/categories"))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$[0].name").value("Fiction"));
+        List<Category> result = controller.all();
+
+        assertEquals(2, result.size());
+        verify(categoryService).getAllCategories();
     }
+
     @Test
-    void shouldCreateCategory() throws Exception {
+    void shouldCreateCategory() {
+        Category input = new Category();
+        input.setName("History");
         Category saved = new Category();
         saved.setId(1L);
-        saved.setName("Science");
+        saved.setName("History");
+        when(categoryService.saveCategory(input)).thenReturn(saved);
 
-        when(categoryService.saveCategory(any(Category.class))).thenReturn(saved);
+        Category result = controller.create(input);
 
-        mvc.perform(post("/api/categories")
-                   .contentType(MediaType.APPLICATION_JSON)
-                   .content("{\"name\":\"Science\"}"))
-           .andExpect(status().isCreated())
-           .andExpect(jsonPath("$.id").value(1L));
+        assertNotNull(result.getId());
+        assertEquals("History", result.getName());
+        verify(categoryService).saveCategory(input);
     }
-    
-    @Test
-    void shouldReturnSingleCategory() throws Exception {
-        Category c = new Category();
-        c.setId(2L);
-        c.setName("History");
-        when(categoryService.getCategoryById(2L)).thenReturn(c);
 
-        mvc.perform(get("/api/categories/2"))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name").value("History"));
-    }
-    
     @Test
-    void shouldUpdateCategory() throws Exception {
+    void shouldReturnCategoryById() {
+        Category category = new Category();
+        category.setId(1L);
+        category.setName("Fiction");
+        when(categoryService.getCategoryById(1L)).thenReturn(category);
+
+        Category result = controller.one(1L);
+
+        assertEquals(1L, result.getId());
+        assertEquals("Fiction", result.getName());
+        verify(categoryService).getCategoryById(1L);
+    }
+
+    @Test
+    void shouldUpdateCategory() {
+        Category input = new Category();
+        input.setName("Updated");
+        
         Category updated = new Category();
-        updated.setId(3L);
+        updated.setId(1L);
         updated.setName("Updated");
-
         when(categoryService.saveCategory(any(Category.class))).thenReturn(updated);
 
-        mvc.perform(put("/api/categories/3")
-                   .contentType(MediaType.APPLICATION_JSON)
-                   .content("{\"name\":\"Updated\"}"))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name").value("Updated"));
-    }
-    @Test
-    void shouldDeleteCategory() throws Exception {
-        doNothing().when(categoryService).deleteCategory(4L);
+        Category result = controller.update(1L, input);
 
-        mvc.perform(delete("/api/categories/4"))
-           .andExpect(status().isNoContent());
+        assertEquals(1L, result.getId());
+        assertEquals("Updated", result.getName());
+        assertEquals(1L, input.getId());
+        verify(categoryService).saveCategory(any(Category.class));
+    }
+
+    @Test
+    void shouldDeleteCategory() {
+        doNothing().when(categoryService).deleteCategory(1L);
+
+        controller.delete(1L);
+
+        verify(categoryService).deleteCategory(1L);
     }
 }

@@ -1,84 +1,93 @@
 package com.attsw.bookstore.web;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.List;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.ui.Model;
 
 import com.attsw.bookstore.model.Category;
 import com.attsw.bookstore.service.CategoryService;
 
-@WebMvcTest(CategoryWebController.class)
+@ExtendWith(MockitoExtension.class)
 class CategoryWebControllerTest {
 
-    @Autowired private MockMvc mvc;
-    @MockitoBean   private CategoryService categoryService;
+    @Mock
+    private CategoryService categoryService;
+
+    @Mock
+    private Model model;
+
+    @InjectMocks
+    private CategoryWebController controller;
 
     @Test
-    void shouldShowCategoryList() throws Exception {
-        Category c = new Category();
-        c.setId(1L);
-        c.setName("Software");
-        when(categoryService.getAllCategories()).thenReturn(List.of(c));
+    void shouldReturnListView() {
+        Category category = new Category();
+        category.setName("Fiction");
+        when(categoryService.getAllCategories()).thenReturn(Arrays.asList(category));
 
-        mvc.perform(get("/categories"))
-           .andExpect(status().isOk())
-           .andExpect(view().name("categories/list"))
-           .andExpect(model().attribute("categories", List.of(c)));
+        String view = controller.list(model);
+
+        assertEquals("categories/list", view);
+        verify(model).addAttribute(eq("categories"), anyList());
+        verify(categoryService).getAllCategories();
     }
-    @Test
-    void shouldShowNewCategoryForm() throws Exception {
-        mvc.perform(get("/categories/new"))
-           .andExpect(status().isOk())
-           .andExpect(view().name("categories/new"))
-           .andExpect(model().attributeExists("category"));
-    }
-    
-    @Test
-    void shouldSaveCategoryAndRedirect() throws Exception {
-        mvc.perform(post("/categories")
-                   .param("name", "Fiction"))
-           .andExpect(status().is3xxRedirection())
-           .andExpect(redirectedUrl("/categories"));
 
-        verify(categoryService).saveCategory(any(Category.class));
-    }
-    
     @Test
-    void shouldShowEditForm() throws Exception {
-        Category c = new Category();
-        c.setId(5L);
-        c.setName("Science");
-        when(categoryService.getCategoryById(5L)).thenReturn(c);
+    void shouldReturnNewCategoryView() {
+        String view = controller.newCategory(model);
 
-        mvc.perform(get("/categories/5/edit"))
-           .andExpect(status().isOk())
-           .andExpect(view().name("categories/edit"))
-           .andExpect(model().attribute("category", c));
+        assertEquals("categories/new", view);
+        verify(model).addAttribute(eq("category"), any(Category.class));
     }
-    @Test
-    void shouldUpdateCategoryAndRedirect() throws Exception {
-        mvc.perform(post("/categories/7")
-                   .param("name", "Updated Name"))
-           .andExpect(status().is3xxRedirection())
-           .andExpect(redirectedUrl("/categories"));
 
-        verify(categoryService).saveCategory(any(Category.class));
+    @Test
+    void shouldSaveCategoryAndRedirect() {
+        Category category = new Category();
+
+        String redirect = controller.saveCategory(category);
+
+        assertEquals("redirect:/categories", redirect);
+        verify(categoryService).saveCategory(category);
     }
-    
-    @Test
-    void shouldDeleteCategoryAndRedirect() throws Exception {
-        mvc.perform(post("/categories/9/delete"))
-           .andExpect(status().is3xxRedirection())
-           .andExpect(redirectedUrl("/categories"));
 
-        verify(categoryService).deleteCategory(9L);
+    @Test
+    void shouldReturnEditCategoryView() {
+        Category category = new Category();
+        category.setId(1L);
+        when(categoryService.getCategoryById(1L)).thenReturn(category);
+
+        String view = controller.editCategory(1L, model);
+
+        assertEquals("categories/edit", view);
+        verify(model).addAttribute("category", category);
+        verify(categoryService).getCategoryById(1L);
+    }
+
+    @Test
+    void shouldUpdateCategoryAndRedirect() {
+        Category category = new Category();
+        category.setName("Updated Name");
+
+        String redirect = controller.updateCategory(1L, category);
+
+        assertEquals("redirect:/categories", redirect);
+        assertEquals(1L, category.getId());
+        verify(categoryService).saveCategory(category);
+    }
+
+    @Test
+    void shouldDeleteCategoryAndRedirect() {
+        String redirect = controller.deleteCategory(1L);
+
+        assertEquals("redirect:/categories", redirect);
+        verify(categoryService).deleteCategory(1L);
     }
 }

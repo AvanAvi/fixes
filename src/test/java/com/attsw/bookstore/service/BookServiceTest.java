@@ -70,8 +70,12 @@ class BookServiceTest {
     void shouldUpdateBook() {
         Book existing = Book.withTitle("Old Title");
         existing.setId(1L);
+        existing.setAuthor("Old Author");
+        existing.setIsbn("Old ISBN");
         
         Book updates = Book.withTitle("New Title");
+        updates.setAuthor("New Author");
+        updates.setIsbn("New ISBN");
         
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
         when(repository.save(existing)).thenReturn(existing);
@@ -79,6 +83,8 @@ class BookServiceTest {
         Book result = service.updateBook(1L, updates);
 
         assertEquals("New Title", result.getTitle());
+        assertEquals("New Author", result.getAuthor());
+        assertEquals("New ISBN", result.getIsbn());
         verify(repository).findById(1L);
         verify(repository).save(existing);
     }
