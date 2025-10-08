@@ -1,0 +1,66 @@
+package com.attsw.bookstore.e2e;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Testcontainers
+class BookRestControllerE2E {
+
+    @Container
+    static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:5.7")
+            .withDatabaseName("testdb")
+            .withUsername("test")
+            .withPassword("test");
+
+    @DynamicPropertySource
+    static void props(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", mysql::getJdbcUrl);
+        registry.add("spring.datasource.username", mysql::getUsername);
+        registry.add("spring.datasource.password", mysql::getPassword);
+    }
+
+    @LocalServerPort
+    private int port;
+
+    @BeforeEach
+    void setup() {
+        RestAssured.port = port;
+    }
+
+    @Test
+    void test_CreateNewBook_ShouldReturnCreatedBook() {
+        String newBookJson = """
+            {
+                "title": "Clean Code",
+                "author": "Robert C. Martin",
+                "isbn": "978-0132350884"
+            }
+            """;
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(newBookJson)
+        .when()
+            .post("/api/books")
+        .then()
+            .statusCode(201)
+            .body("id", notNullValue())
+            .body("title", equalTo("Clean Code"))
+            .body("author", equalTo("Robert C. Martin"))
+            .body("isbn", equalTo("978-0132350884"));
+    }
+}

@@ -82,7 +82,15 @@
       <artifactId>selenium-java</artifactId>
       <scope>test</scope>
     </dependency>
-  </dependencies>
+
+  
+  <!-- RestAssured for REST API E2E Testing -->
+	<dependency>
+    	<groupId>io.rest-assured</groupId>
+    	<artifactId>rest-assured</artifactId>
+    	<scope>test</scope>
+	</dependency>
+ </dependencies>
 
   <build>
     <pluginManagement>
@@ -139,7 +147,7 @@
     </pluginManagement>
 
     <plugins>
-      <!-- Build Helper: MOVED HERE from profile - always active -->
+      <!-- Build Helper -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
