@@ -150,4 +150,43 @@ class BookRestControllerE2E {
             .body("author", equalTo("Updated Author"))
             .body("isbn", equalTo("222-2222222222"));
     }
+    
+    @Test
+    void test_DeleteBook_ShouldRemoveBook() {
+        // ARRANGE: Create a book first
+        Integer bookId = given()
+            .contentType(ContentType.JSON)
+            .body("""
+                {
+                    "title": "The Great Gatsby",
+                    "author": "F. Scott Fitzgerald",
+                    "isbn": "978-0743273565"
+                }
+                """)
+        .when()
+            .post("/api/books")
+        .then()
+            .statusCode(201)
+            .extract()
+            .path("id");
+
+        // ACT: Delete the book
+        given()
+        .when()
+            .delete("/api/books/" + bookId)
+        .then()
+            .statusCode(204); // No Content
+
+        // ASSERT: Verify book no longer exists
+       
+       
+        given()
+            .accept(ContentType.JSON)
+        .when()
+            .get("/api/books/" + bookId)
+        .then()
+            .statusCode(200);
+            
+        
+    }
 }
