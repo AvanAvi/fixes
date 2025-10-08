@@ -98,4 +98,56 @@ class BookRestControllerE2E {
             .body("author", equalTo("Martin Fowler"))
             .body("isbn", equalTo("978-0201485677"));
     }
+    
+    @Test
+    void test_UpdateBook_ShouldModifyExistingBook() {
+        // ARRANGE: Create a book first
+        Integer bookId = given()
+            .contentType(ContentType.JSON)
+            .body("""
+                {
+                    "title": "Old Title",
+                    "author": "Old Author",
+                    "isbn": "111-1111111111"
+                }
+                """)
+        .when()
+            .post("/api/books")
+        .then()
+            .statusCode(201)
+            .extract()
+            .path("id");
+
+        // ACT: Update the book
+        String updatedBookJson = """
+            {
+                "title": "Updated Title",
+                "author": "Updated Author",
+                "isbn": "222-2222222222"
+            }
+            """;
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(updatedBookJson)
+        .when()
+            .put("/api/books/" + bookId)
+        .then()
+            .statusCode(200)
+            .body("id", equalTo(bookId))
+            .body("title", equalTo("Updated Title"))
+            .body("author", equalTo("Updated Author"))
+            .body("isbn", equalTo("222-2222222222"));
+
+        // ASSERT: Verify persistence by retrieving again
+        given()
+            .accept(ContentType.JSON)
+        .when()
+            .get("/api/books/" + bookId)
+        .then()
+            .statusCode(200)
+            .body("title", equalTo("Updated Title"))
+            .body("author", equalTo("Updated Author"))
+            .body("isbn", equalTo("222-2222222222"));
+    }
 }
