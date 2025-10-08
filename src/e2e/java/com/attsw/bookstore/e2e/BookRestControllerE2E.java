@@ -63,4 +63,39 @@ class BookRestControllerE2E {
             .body("author", equalTo("Robert C. Martin"))
             .body("isbn", equalTo("978-0132350884"));
     }
+    
+    @Test
+    void test_GetBookById_ShouldReturnExistingBook() {
+        // ARRANGE: Create a book first
+        String newBookJson = """
+            {
+                "title": "Refactoring",
+                "author": "Martin Fowler",
+                "isbn": "978-0201485677"
+            }
+            """;
+
+        // ACT: Create book and extract its ID
+        Integer bookId = given()
+            .contentType(ContentType.JSON)
+            .body(newBookJson)
+        .when()
+            .post("/api/books")
+        .then()
+            .statusCode(201)
+            .extract()
+            .path("id");
+
+        // ASSERT: Retrieve the book by ID
+        given()
+            .accept(ContentType.JSON)
+        .when()
+            .get("/api/books/" + bookId)
+        .then()
+            .statusCode(200)
+            .body("id", equalTo(bookId))
+            .body("title", equalTo("Refactoring"))
+            .body("author", equalTo("Martin Fowler"))
+            .body("isbn", equalTo("978-0201485677"));
+    }
 }
