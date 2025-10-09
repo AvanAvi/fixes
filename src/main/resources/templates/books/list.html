@@ -2,9 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head><title>Book List</title></head>
 <body>
-<h1>Books</h1>
-<ul>
-  <li th:each="book : ${books}" th:text="${book.title}">Book Title</li>
-</ul>
+  <h1>Books</h1>
+
+  <a th:href="@{/books/new}">New Book</a>
+
+  <ul>
+    <li th:each="book : ${books}">
+      <span th:text="${book.title}">Title</span> - 
+      <span th:text="${book.author}">Author</span> - 
+      <span th:text="${book.isbn}">ISBN</span>
+    </li>
+  </ul>
 </body>
 </html>
