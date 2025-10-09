@@ -1,6 +1,9 @@
-package com.attsw.bookstore.e2e;                         // ← already correct
+package com.attsw.bookstore.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static io.restassured.RestAssured.*;
+
+import io.restassured.RestAssured;
 
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -81,6 +84,47 @@ class BookWebE2EE {                                       // ← NEW class name
             assertThat(driver.getPageSource()).contains("Clean Code");
             assertThat(driver.getPageSource()).contains("Robert C. Martin");
             assertThat(driver.getPageSource()).contains("978-0132350884");
+        } finally {
+            driver.quit();
+        }
+    }
+    
+    @Test
+    void test_ListBooks_ShowsAllBooks() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        WebDriver driver = new ChromeDriver(options);
+        
+        try {
+            // Create test data via REST API (Bettini's approach)
+            RestAssured.port = port;
+            
+            given()
+                .contentType("application/json")
+                .body("{\"title\":\"Clean Code\",\"author\":\"Robert C. Martin\",\"isbn\":\"978-0132350884\"}")
+                .when().post("/api/books")
+                .then().statusCode(201);
+            
+            given()
+                .contentType("application/json")
+                .body("{\"title\":\"The Pragmatic Programmer\",\"author\":\"Andrew Hunt\",\"isbn\":\"978-0201616224\"}")
+                .when().post("/api/books")
+                .then().statusCode(201);
+            
+            // Navigate to book list via web UI
+            driver.get("http://localhost:" + port + "/");
+            driver.findElement(By.cssSelector("a[href='/books']")).click();
+            
+            // Verify both books appear in the list
+            String pageSource = driver.getPageSource();
+            assertThat(pageSource).contains("Clean Code");
+            assertThat(pageSource).contains("Robert C. Martin");
+            assertThat(pageSource).contains("978-0132350884");
+            
+            assertThat(pageSource).contains("The Pragmatic Programmer");
+            assertThat(pageSource).contains("Andrew Hunt");
+            assertThat(pageSource).contains("978-0201616224");
+            
         } finally {
             driver.quit();
         }
