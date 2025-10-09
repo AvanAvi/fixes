@@ -135,4 +135,37 @@ class CategoryRestControllerE2E {
 			.statusCode(200)
 			.body("name", equalTo("Updated Category"));
 	}
+	
+	@Test
+	void test_DeleteCategory_ShouldRemoveCategory() {
+		// ARRANGE: Create a category first
+		Integer categoryId = given()
+			.contentType(ContentType.JSON)
+			.body("""
+				{
+					"name": "Historical Fiction"
+				}
+				""")
+		.when()
+			.post("/api/categories")
+		.then()
+			.statusCode(201)
+			.extract()
+			.path("id");
+
+		// ACT: Delete the category
+		given()
+		.when()
+			.delete("/api/categories/" + categoryId)
+		.then()
+			.statusCode(204);
+
+		// ASSERT: Verify category no longer exists
+		given()
+			.accept(ContentType.JSON)
+		.when()
+			.get("/api/categories/" + categoryId)
+		.then()
+			.statusCode(404);
+	}
 }
