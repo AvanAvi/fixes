@@ -48,4 +48,41 @@ class BookWebE2EE {                                       // ← NEW class name
 
         driver.quit();
     }
+    
+    
+    @Test
+    void test_CreateNewBook_ViaWebForm() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        WebDriver driver = new ChromeDriver(options);
+        
+        try {
+            // Start from home page
+            driver.get("http://localhost:" + port + "/");
+            
+            // Navigate to Books
+            driver.findElement(By.cssSelector("a[href='/books']")).click();
+            
+            // Click "New Book"
+            driver.findElement(By.cssSelector("a[href='/books/new']")).click();
+            
+            // Fill the form
+            driver.findElement(By.name("title")).sendKeys("Clean Code");
+            driver.findElement(By.name("author")).sendKeys("Robert C. Martin");
+            driver.findElement(By.name("isbn")).sendKeys("978-0132350884");
+            
+            // Submit
+            driver.findElement(By.name("btn_submit")).click();
+            
+            // Verify redirect to list page
+            assertThat(driver.getCurrentUrl()).contains("/books");
+            
+            // Verify book appears in the list
+            assertThat(driver.getPageSource()).contains("Clean Code");
+            assertThat(driver.getPageSource()).contains("Robert C. Martin");
+            assertThat(driver.getPageSource()).contains("978-0132350884");
+        } finally {
+            driver.quit();
+        }
+    }
 }
