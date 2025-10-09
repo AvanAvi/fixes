@@ -185,7 +185,7 @@ class BookRestControllerE2E {
         .when()
             .get("/api/books/" + bookId)
         .then()
-            .statusCode(200);
+            .statusCode(404);
             
         
     }

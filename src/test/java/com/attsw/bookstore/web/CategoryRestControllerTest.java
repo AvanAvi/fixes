@@ -1,7 +1,8 @@
 package com.attsw.bookstore.web;
-
+import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 import java.util.List;
@@ -94,4 +95,21 @@ class CategoryRestControllerTest {
 
         verify(categoryService).deleteCategory(1L);
     }
+    
+    @Test
+    void shouldReturn404WhenCategoryNotFound() {
+        when(categoryService.getCategoryById(999L)).thenReturn(null);
+
+        ResponseStatusException exception = assertThrows(
+            ResponseStatusException.class, 
+            () -> controller.one(999L)
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        assertTrue(exception.getReason().contains("not found"));
+        verify(categoryService).getCategoryById(999L);
+    }
+    
+    
+    
 }

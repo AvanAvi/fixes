@@ -2,7 +2,7 @@ package com.attsw.bookstore.web;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
+import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import com.attsw.bookstore.model.Book;
 import com.attsw.bookstore.service.BookService;
@@ -82,5 +83,19 @@ class BookRestControllerTest {
         controller.delete(1L);
 
         verify(bookService).deleteBook(1L);
+    }
+    
+    @Test
+    void shouldReturn404WhenBookNotFound() {
+        when(bookService.getBookById(999L)).thenReturn(null);
+
+        ResponseStatusException exception = assertThrows(
+            ResponseStatusException.class, 
+            () -> controller.one(999L)
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        assertTrue(exception.getReason().contains("not found"));
+        verify(bookService).getBookById(999L);
     }
 }

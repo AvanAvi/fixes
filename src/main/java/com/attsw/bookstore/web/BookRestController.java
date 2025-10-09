@@ -2,6 +2,7 @@ package com.attsw.bookstore.web;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -31,7 +32,12 @@ public class BookRestController {
     
     @GetMapping("/{id}")
     public Book one(@PathVariable Long id) {
-        return bookService.getBookById(id);
+        Book book = bookService.getBookById(id);
+        if (book == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                "Book not found with id: " + id);
+        }
+        return book;
     }
     
     @PutMapping("/{id}")

@@ -1,5 +1,6 @@
 package com.attsw.bookstore.web;
 
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -38,8 +39,15 @@ public class CategoryRestController {
     
     @GetMapping("/{id}")
     public Category one(@PathVariable Long id) {
-        return categoryService.getCategoryById(id);
+        Category category = categoryService.getCategoryById(id);
+        if (category == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                "Category not found with id: " + id);
+        }
+        return category;
     }
+    
+    
     @PutMapping("/{id}")
     public Category update(@PathVariable Long id, @RequestBody Category category) {
         category.setId(id);
