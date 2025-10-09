@@ -91,4 +91,48 @@ class CategoryRestControllerE2E {
 			.body("id", equalTo(categoryId))
 			.body("name", equalTo("Programming"));
 	}
+	
+	@Test
+	void test_UpdateCategory_ShouldModifyExistingCategory() {
+		// ARRANGE: Create a category first
+		Integer categoryId = given()
+			.contentType(ContentType.JSON)
+			.body("""
+				{
+					"name": "Old Category"
+				}
+				""")
+		.when()
+			.post("/api/categories")
+		.then()
+			.statusCode(201)
+			.extract()
+			.path("id");
+
+		// ACT: Update the category
+		String updatedCategoryJson = """
+			{
+				"name": "Updated Category"
+			}
+			""";
+
+		given()
+			.contentType(ContentType.JSON)
+			.body(updatedCategoryJson)
+		.when()
+			.put("/api/categories/" + categoryId)
+		.then()
+			.statusCode(200)
+			.body("id", equalTo(categoryId))
+			.body("name", equalTo("Updated Category"));
+
+		// ASSERT: Verify persistence by retrieving again
+		given()
+			.accept(ContentType.JSON)
+		.when()
+			.get("/api/categories/" + categoryId)
+		.then()
+			.statusCode(200)
+			.body("name", equalTo("Updated Category"));
+	}
 }
