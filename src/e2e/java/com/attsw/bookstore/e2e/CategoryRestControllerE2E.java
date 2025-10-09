@@ -60,4 +60,35 @@ class CategoryRestControllerE2E {
 			.body("id", notNullValue())
 			.body("name", equalTo("Science Fiction"));
 	}
+	
+	@Test
+	void test_GetCategoryById_ShouldReturnExistingCategory() {
+		// ARRANGE: Create a category first
+		String newCategoryJson = """
+			{
+				"name": "Programming"
+			}
+			""";
+
+		// ACT: Create category and extract its ID
+		Integer categoryId = given()
+			.contentType(ContentType.JSON)
+			.body(newCategoryJson)
+		.when()
+			.post("/api/categories")
+		.then()
+			.statusCode(201)
+			.extract()
+			.path("id");
+
+		// ASSERT: Retrieve the category by ID
+		given()
+			.accept(ContentType.JSON)
+		.when()
+			.get("/api/categories/" + categoryId)
+		.then()
+			.statusCode(200)
+			.body("id", equalTo(categoryId))
+			.body("name", equalTo("Programming"));
+	}
 }
