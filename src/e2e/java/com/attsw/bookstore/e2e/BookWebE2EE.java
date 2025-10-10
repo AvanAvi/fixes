@@ -172,4 +172,40 @@ class BookWebE2EE {
             driver.quit();
         }
     }
+    
+    @Test
+    void test_DeleteBook_ViaWebForm() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        WebDriver driver = new ChromeDriver(options);
+        
+        try {
+            // Create a book via REST API
+            RestAssured.port = port;
+            
+            Integer bookId = given()
+                .contentType("application/json")
+                .body("{\"title\":\"Book to Delete\",\"author\":\"Test Author\",\"isbn\":\"999-9999999999\"}")
+                .when().post("/api/books")
+                .then().statusCode(201)
+                .extract().path("id");
+            
+            // Navigate to books list and verify book exists
+            driver.get("http://localhost:" + port + "/");
+            driver.findElement(By.cssSelector("a[href='/books']")).click();
+            
+            assertThat(driver.getPageSource()).contains("Book to Delete");
+            
+            // Click the specific delete button for this book using XPath
+            driver.findElement(By.xpath("//form[@action='/books/" + bookId + "/delete']//button[@name='btn_delete']")).click();
+            
+            // Verify redirect and book no longer appears
+            assertThat(driver.getCurrentUrl()).contains("/books");
+            assertThat(driver.getPageSource()).doesNotContain("Book to Delete");
+            assertThat(driver.getPageSource()).doesNotContain("999-9999999999");
+            
+        } finally {
+            driver.quit();
+        }
+    }
 }
