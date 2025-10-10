@@ -8,6 +8,9 @@
   <li th:each="category : ${categories}">
     <span th:text="${category.name}">Category Name</span>
     <a th:href="@{/categories/{id}/edit(id=${category.id})}">Edit</a>
+    <form method="post" th:action="@{/categories/{id}/delete(id=${category.id})}" style="display:inline;">
+      <button type="submit" name="btn_delete">Delete</button>
+    </form>
   </li>
 </ul>
 </body>

@@ -157,4 +157,46 @@ class CategoryWebE2E {
             driver.quit();
         }
     }
+    
+    @Test
+    void test_DeleteCategory_ViaWebForm() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        WebDriver driver = new ChromeDriver(options);
+        
+        try {
+            // Create a category via REST API
+            RestAssured.port = port;
+            
+            Integer categoryId = given()
+                .contentType("application/json")
+                .body("{\"name\":\"Category to Delete\"}")
+                .when().post("/api/categories")
+                .then().statusCode(201)
+                .extract().path("id");
+            
+            // Navigate to categories list and verify category exists
+            driver.get("http://localhost:" + port + "/");
+            driver.findElement(By.cssSelector("a[href='/categories']")).click();
+            
+            // Wait for page to load
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("h1")));
+            
+            assertThat(driver.getPageSource()).contains("Category to Delete");
+            
+            // Click the specific delete button 
+            driver.findElement(By.xpath("//form[@action='/categories/" + categoryId + "/delete']//button[@name='btn_delete']")).click();
+            
+            // Wait for redirect
+            wait.until(ExpectedConditions.urlContains("/categories"));
+            
+            // Verify redirect and category no longer appears
+            assertThat(driver.getCurrentUrl()).contains("/categories");
+            assertThat(driver.getPageSource()).doesNotContain("Category to Delete");
+            
+        } finally {
+            driver.quit();
+        }
+    }
 }
