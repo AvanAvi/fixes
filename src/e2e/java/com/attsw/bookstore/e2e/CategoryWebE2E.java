@@ -69,4 +69,40 @@ class CategoryWebE2E {
             driver.quit();
         }
     }
+    
+    @Test
+    void test_ListCategories_ShowsAllCategories() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        WebDriver driver = new ChromeDriver(options);
+        
+        try {
+            // Create test data via REST API
+            RestAssured.port = port;
+            
+            given()
+                .contentType("application/json")
+                .body("{\"name\":\"Science Fiction\"}")
+                .when().post("/api/categories")
+                .then().statusCode(201);
+            
+            given()
+                .contentType("application/json")
+                .body("{\"name\":\"Programming\"}")
+                .when().post("/api/categories")
+                .then().statusCode(201);
+            
+            // Navigate to category list via web UI
+            driver.get("http://localhost:" + port + "/");
+            driver.findElement(By.cssSelector("a[href='/categories']")).click();
+            
+            // Verify both categories appear in the list
+            String pageSource = driver.getPageSource();
+            assertThat(pageSource).contains("Science Fiction");
+            assertThat(pageSource).contains("Programming");
+            
+        } finally {
+            driver.quit();
+        }
+    }
 }
