@@ -18,6 +18,11 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.WebElement;
+import java.time.Duration;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 class CategoryWebE2E {
@@ -51,17 +56,25 @@ class CategoryWebE2E {
             // Navigate to Categories
             driver.findElement(By.cssSelector("a[href='/categories']")).click();
             
-            // Click "New Category"
+            // Click "New Category" and wait for form to load
             driver.findElement(By.cssSelector("a[href='/categories/new']")).click();
             
+            // Wait for form to be ready - find the name input field
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            WebElement nameInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("name")));
+            
             // Fill the form
-            driver.findElement(By.name("name")).sendKeys("Science Fiction");
+            nameInput.sendKeys("Science Fiction");
             
             // Submit
             driver.findElement(By.name("btn_submit")).click();
             
+            // Wait for redirect to complete
+            wait.until(ExpectedConditions.urlContains("/categories"));
+            
             // Verify redirect to list page
             assertThat(driver.getCurrentUrl()).contains("/categories");
+            assertThat(driver.getCurrentUrl()).doesNotContain("/new");
             
             // Verify category appears in the list
             assertThat(driver.getPageSource()).contains("Science Fiction");
