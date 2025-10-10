@@ -105,4 +105,43 @@ class CategoryWebE2E {
             driver.quit();
         }
     }
+    
+    @Test
+    void test_EditCategory_ViaWebForm() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        WebDriver driver = new ChromeDriver(options);
+        
+        try {
+            // Create a category via REST API
+            RestAssured.port = port;
+            
+            Integer categoryId = given()
+                .contentType("application/json")
+                .body("{\"name\":\"Original Category\"}")
+                .when().post("/api/categories")
+                .then().statusCode(201)
+                .extract().path("id");
+            
+            // Navigate to edit page
+            driver.get("http://localhost:" + port + "/");
+            driver.findElement(By.cssSelector("a[href='/categories']")).click();
+            driver.findElement(By.cssSelector("a[href='/categories/" + categoryId + "/edit']")).click();
+            
+            // Update the form field
+            driver.findElement(By.name("name")).clear();
+            driver.findElement(By.name("name")).sendKeys("Updated Category");
+            
+            // Submit
+            driver.findElement(By.name("btn_submit")).click();
+            
+            // Verify redirect and updated data appears
+            assertThat(driver.getCurrentUrl()).contains("/categories");
+            assertThat(driver.getPageSource()).contains("Updated Category");
+            assertThat(driver.getPageSource()).doesNotContain("Original Category");
+            
+        } finally {
+            driver.quit();
+        }
+    }
 }
