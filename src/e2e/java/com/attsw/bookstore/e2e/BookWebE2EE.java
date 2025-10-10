@@ -20,7 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
-class BookWebE2EE {                                       // ← NEW class name
+class BookWebE2EE {                                      
 
     @Container
     static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:5.7")
@@ -96,7 +96,6 @@ class BookWebE2EE {                                       // ← NEW class name
         WebDriver driver = new ChromeDriver(options);
         
         try {
-            // Create test data via REST API (Bettini's approach)
             RestAssured.port = port;
             
             given()
@@ -124,6 +123,50 @@ class BookWebE2EE {                                       // ← NEW class name
             assertThat(pageSource).contains("The Pragmatic Programmer");
             assertThat(pageSource).contains("Andrew Hunt");
             assertThat(pageSource).contains("978-0201616224");
+            
+        } finally {
+            driver.quit();
+        }
+    }
+    
+    @Test
+    void test_EditBook_ViaWebForm() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        WebDriver driver = new ChromeDriver(options);
+        
+        try {
+            // Create a book via REST API
+            RestAssured.port = port;
+            
+            Integer bookId = given()
+                .contentType("application/json")
+                .body("{\"title\":\"Original Title\",\"author\":\"Original Author\",\"isbn\":\"111-1111111111\"}")
+                .when().post("/api/books")
+                .then().statusCode(201)
+                .extract().path("id");
+            
+            // Navigate to edit page
+            driver.get("http://localhost:" + port + "/");
+            driver.findElement(By.cssSelector("a[href='/books']")).click();
+            driver.findElement(By.cssSelector("a[href='/books/" + bookId + "/edit']")).click();
+            
+            // Update the form fields
+            driver.findElement(By.name("title")).clear();
+            driver.findElement(By.name("title")).sendKeys("Updated Title");
+            driver.findElement(By.name("author")).clear();
+            driver.findElement(By.name("author")).sendKeys("Updated Author");
+            driver.findElement(By.name("isbn")).clear();
+            driver.findElement(By.name("isbn")).sendKeys("222-2222222222");
+            
+            // Submit
+            driver.findElement(By.name("btn_submit")).click();
+            
+            // Verify redirect and updated data appears
+            assertThat(driver.getCurrentUrl()).contains("/books");
+            assertThat(driver.getPageSource()).contains("Updated Title");
+            assertThat(driver.getPageSource()).contains("Updated Author");
+            assertThat(driver.getPageSource()).contains("222-2222222222");
             
         } finally {
             driver.quit();

@@ -11,6 +11,7 @@
       <span th:text="${book.title}">Title</span> - 
       <span th:text="${book.author}">Author</span> - 
       <span th:text="${book.isbn}">ISBN</span>
+      <a th:href="@{/books/{id}/edit(id=${book.id})}">Edit</a>
     </li>
   </ul>
 </body>
