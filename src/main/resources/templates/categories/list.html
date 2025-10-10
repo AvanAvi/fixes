@@ -5,7 +5,10 @@
 <h1>Categories</h1>
 <a th:href="@{/categories/new}">New Category</a>
 <ul>
-  <li th:each="category : ${categories}" th:text="${category.name}">Category Name</li>
+  <li th:each="category : ${categories}">
+    <span th:text="${category.name}">Category Name</span>
+    <a th:href="@{/categories/{id}/edit(id=${category.id})}">Edit</a>
+  </li>
 </ul>
 </body>
 </html>
