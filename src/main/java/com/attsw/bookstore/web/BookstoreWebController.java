@@ -3,6 +3,7 @@ package com.attsw.bookstore.web;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.attsw.bookstore.model.Book;
 import com.attsw.bookstore.service.BookService;
+import com.attsw.bookstore.service.CategoryService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class BookstoreWebController {
 
     private final BookService bookService;
+    private final CategoryService categoryService;
 
-    public BookstoreWebController(BookService bookService) {
+    public BookstoreWebController(BookService bookService, CategoryService categoryService) {
         this.bookService = bookService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/")
@@ -31,6 +34,7 @@ public class BookstoreWebController {
     @GetMapping("/books/new")
     public String newBook(Model model) {
         model.addAttribute("book", Book.withTitle(""));
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "books/new";
     }
     
@@ -44,6 +48,7 @@ public class BookstoreWebController {
     public String editBook(@PathVariable Long id, Model model) {
         Book book = bookService.getBookById(id);
         model.addAttribute("book", book);
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "books/edit";
     }
     

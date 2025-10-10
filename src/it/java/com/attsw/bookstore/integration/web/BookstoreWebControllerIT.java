@@ -1,6 +1,7 @@
 package com.attsw.bookstore.integration.web;
 
 import com.attsw.bookstore.web.BookstoreWebController;
+import com.attsw.bookstore.service.CategoryService;
 import com.attsw.bookstore.service.BookService;
 
 import static org.mockito.Mockito.verify;
@@ -27,6 +28,9 @@ class BookstoreWebControllerIT {
 
     @MockitoBean
     private BookService bookService;
+    
+    @MockitoBean
+    private CategoryService categoryService;
 
     @Test
     void shouldShowBookListPage() throws Exception {
@@ -44,7 +48,8 @@ class BookstoreWebControllerIT {
         mvc.perform(get("/books/new"))
             .andExpect(status().isOk())
             .andExpect(view().name("books/new"))
-            .andExpect(model().attributeExists("book"));
+            .andExpect(model().attributeExists("book"))
+            .andExpect(model().attributeExists("categories"));
     }
 
     @Test
@@ -72,7 +77,8 @@ class BookstoreWebControllerIT {
         mvc.perform(get("/books/1/edit"))
             .andExpect(status().isOk())
             .andExpect(view().name("books/edit"))
-            .andExpect(model().attributeExists("book"));
+            .andExpect(model().attributeExists("book"))
+            .andExpect(model().attributeExists("categories"));
     }
 
     @Test

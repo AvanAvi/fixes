@@ -1,6 +1,7 @@
 package com.attsw.bookstore.web;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.attsw.bookstore.service.CategoryService;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -14,12 +15,16 @@ import org.springframework.ui.Model;
 
 import com.attsw.bookstore.model.Book;
 import com.attsw.bookstore.service.BookService;
+import java.util.Collections;
 
 @ExtendWith(MockitoExtension.class)
 class BookstoreWebControllerTest {
 
     @Mock
     private BookService bookService;
+    
+    @Mock
+    private CategoryService categoryService;
 
     @Mock
     private Model model;
@@ -47,10 +52,14 @@ class BookstoreWebControllerTest {
 
     @Test
     void shouldReturnNewBookView() {
+        when(categoryService.getAllCategories()).thenReturn(Collections.emptyList());
+        
         String view = controller.newBook(model);
 
         assertEquals("books/new", view);
         verify(model).addAttribute(eq("book"), any(Book.class));
+        verify(model).addAttribute(eq("categories"), anyList());
+        verify(categoryService).getAllCategories();
     }
 
     @Test
@@ -68,12 +77,15 @@ class BookstoreWebControllerTest {
         Book book = Book.withTitle("Clean Code");
         book.setId(1L);
         when(bookService.getBookById(1L)).thenReturn(book);
+        when(categoryService.getAllCategories()).thenReturn(Collections.emptyList());
 
         String view = controller.editBook(1L, model);
 
         assertEquals("books/edit", view);
         verify(model).addAttribute("book", book);
+        verify(model).addAttribute(eq("categories"), anyList());
         verify(bookService).getBookById(1L);
+        verify(categoryService).getAllCategories();
     }
 
     @Test
