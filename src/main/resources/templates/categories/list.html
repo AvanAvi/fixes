@@ -3,6 +3,7 @@
 <head><title>Categories</title></head>
 <body>
 <h1>Categories</h1>
+<a th:href="@{/categories/new}">New Category</a>
 <ul>
   <li th:each="category : ${categories}" th:text="${category.name}">Category Name</li>
 </ul>
