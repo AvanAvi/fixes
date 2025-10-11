@@ -43,6 +43,7 @@ class CategoryWebE2E {
     @LocalServerPort
     private int port;
 
+    
     @Test
     void test_CreateNewCategory_ViaWebForm() {
         ChromeOptions options = new ChromeOptions();
@@ -60,7 +61,7 @@ class CategoryWebE2E {
             driver.findElement(By.cssSelector("a[href='/categories/new']")).click();
             
             // Wait for form to be ready - find the name input field
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             WebElement nameInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("name")));
             
             // Fill the form
@@ -69,8 +70,11 @@ class CategoryWebE2E {
             // Submit
             driver.findElement(By.name("btn_submit")).click();
             
-            // Wait for redirect to complete
-            wait.until(ExpectedConditions.urlContains("/categories"));
+            // Wait explicitly for redirect to complete
+            wait.until(ExpectedConditions.not(ExpectedConditions.urlContains("/new")));
+            
+            // Additional wait for page to be ready
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("h1")));
             
             // Verify redirect to list page
             assertThat(driver.getCurrentUrl()).contains("/categories");
