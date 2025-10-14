@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Book List</title></head>
+<head>
+  <title>Book List</title>
+  <link rel="stylesheet" th:href="@{/style.css}" />
+</head>
 <body>
+  <a th:href="@{/}" class="nav-home">← Back to Home</a>
+  
   <h1>Books</h1>
-
-  <a th:href="@{/books/new}">New Book</a>
-
+  
+  <div class="toolbar">
+    <a th:href="@{/books/new}" class="btn">+ New Book</a>
+  </div>
+  
   <ul>
     <li th:each="book : ${books}">
-      <span th:text="${book.title}">Title</span> - 
+      <strong th:text="${book.title}">Title</strong> - 
       <span th:text="${book.author}">Author</span> - 
       <span th:text="${book.isbn}">ISBN</span>
-      <span th:if="${book.category != null}">
-        [<span th:text="${book.category.name}">Category</span>]
+      <span th:if="${book.category != null}" class="category-badge">
+        <span th:text="${book.category.name}">Category</span>
       </span>
       <a th:href="@{/books/{id}/edit(id=${book.id})}">Edit</a>
-      <form method="post" th:action="@{/books/{id}/delete(id=${book.id})}" style="display:inline;">
+      <form method="post" th:action="@{/books/{id}/delete(id=${book.id})}">
         <button type="submit" name="btn_delete">Delete</button>
       </form>
     </li>

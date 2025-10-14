@@ -1,0 +1,212 @@
+/* Bookstore Design */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #ffffff;
+  color: #333333;
+  line-height: 1.6;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #333333;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+/* Navigation */
+.nav-home {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: #6b9ac4;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.nav-home:hover {
+  text-decoration: underline;
+}
+
+nav {
+  margin: 2rem 0;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+nav a {
+  color: #6b9ac4;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  margin-right: 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  display: inline-block;
+}
+
+nav a:hover {
+  background-color: #f5f5f5;
+}
+
+/* Links */
+a {
+  color: #6b9ac4;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: #5a89b3;
+  text-decoration: underline;
+}
+
+/* Buttons */
+button, .btn {
+  background-color: #6b9ac4;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s;
+  display: inline-block;
+  text-decoration: none;
+}
+
+button:hover, .btn:hover {
+  background-color: #5a89b3;
+  text-decoration: none;
+}
+
+button[name="btn_delete"] {
+  background-color: #e89696;
+  margin-left: 0.5rem;
+}
+
+button[name="btn_delete"]:hover {
+  background-color: #d87878;
+}
+
+button[name="btn_submit"] {
+  background-color: #90c695;
+  margin-right: 0.75rem;
+}
+
+button[name="btn_submit"]:hover {
+  background-color: #7ab57f;
+}
+
+.btn-cancel {
+  background-color: #cccccc;
+  color: #333333;
+}
+
+.btn-cancel:hover {
+  background-color: #bbbbbb;
+}
+
+/* Forms */
+form {
+  display: inline;
+}
+
+form.form-main {
+  display: block;
+  max-width: 600px;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  color: #555555;
+  font-weight: 500;
+}
+
+label > span {
+  min-width: 100px;
+  margin-right: 1rem;
+}
+
+input[type="text"],
+select {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+input[type="text"]:focus,
+select:focus {
+  outline: none;
+  border-color: #6b9ac4;
+}
+
+.form-actions {
+  margin-top: 1.5rem;
+  margin-left: 116px; /* Align with input fields */
+}
+
+
+
+/* Lists */
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul li {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: #fafafa;
+  border-radius: 4px;
+  border-left: 3px solid #6b9ac4;
+}
+
+/* Nested lists (books in categories) */
+ul ul {
+  margin-top: 0.5rem;
+  margin-left: 1rem;
+}
+
+ul ul li {
+  background-color: #ffffff;
+  border-left: 2px solid #90c695;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+}
+
+/* Action links and buttons in list items */
+ul li > a,
+ul li > form {
+  margin-left: 0.75rem;
+}
+
+/* Category badge in book list */
+.category-badge {
+  display: inline-block;
+  background-color: #e8f4f8;
+  color: #6b9ac4;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+}
+
+/* Toolbar with actions */
+.toolbar {
+  margin: 1.5rem 0;
+}
