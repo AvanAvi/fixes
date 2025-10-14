@@ -1,6 +1,7 @@
 package com.attsw.bookstore.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.attsw.bookstore.model.Category; 
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -73,9 +74,19 @@ class BookServiceTest {
         existing.setAuthor("Old Author");
         existing.setIsbn("Old ISBN");
         
+        Category oldCategory = new Category();
+        oldCategory.setId(1L);
+        oldCategory.setName("Old Category");
+        existing.setCategory(oldCategory);
+        
         Book updates = Book.withTitle("New Title");
         updates.setAuthor("New Author");
         updates.setIsbn("New ISBN");
+        
+        Category newCategory = new Category();
+        newCategory.setId(2L);
+        newCategory.setName("New Category");
+        updates.setCategory(newCategory);
         
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
         when(repository.save(existing)).thenReturn(existing);
@@ -85,6 +96,7 @@ class BookServiceTest {
         assertEquals("New Title", result.getTitle());
         assertEquals("New Author", result.getAuthor());
         assertEquals("New ISBN", result.getIsbn());
+        assertEquals(newCategory, result.getCategory());
         verify(repository).findById(1L);
         verify(repository).save(existing);
     }
