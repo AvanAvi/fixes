@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Bookstore</title></head>
+<head>
+  <title>Bookstore</title>
+  <link rel="stylesheet" th:href="@{/style.css}" />
+</head>
 <body>
-  <h1>Bookstore</h1>
-
+  <h1>📚 Bookstore</h1>
+  
   <nav>
-    <a th:href="@{/books}">Books</a> |
+    <a th:href="@{/books}">Books</a>
     <a th:href="@{/categories}">Categories</a>
   </nav>
+  
+  <p style="color: #666; margin-top: 1rem;">Welcome to the Bookstore Management System</p>
 </body>
 </html>

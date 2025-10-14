@@ -1,11 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>New Category</title></head>
+<head>
+  <title>New Category</title>
+  <link rel="stylesheet" th:href="@{/style.css}" />
+</head>
 <body>
-<h1>Add Category</h1>
-<form method="post" th:action="@{/categories}" th:object="${category}">
-  <label>Name: <input type="text" th:field="*{name}" /></label><br/>
-  <button type="submit" name="btn_submit">Save</button>
-</form>
+  <a th:href="@{/categories}" class="nav-home">← Back to Categories</a>
+  
+  <h1>Add New Category</h1>
+  
+  <form method="post" th:action="@{/categories}" th:object="${category}" class="form-main">
+    <label>
+      <span>Name:</span>
+      <input type="text" th:field="*{name}" required />
+    </label>
+    
+    <div class="form-actions">
+      <button type="submit" name="btn_submit">Save Category</button>
+      <a th:href="@{/categories}" class="btn btn-cancel">Cancel</a>
+    </div>
+  </form>
 </body>
 </html>

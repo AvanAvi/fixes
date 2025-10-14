@@ -1,23 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>New Book</title></head>
+<head>
+  <title>New Book</title>
+  <link rel="stylesheet" th:href="@{/style.css}" />
+</head>
 <body>
-<h1>Add Book</h1>
-<form method="post" th:action="@{/books}" th:object="${book}">
-  <label>Title: <input type="text" th:field="*{title}" /></label><br/>
-  <label>Author: <input type="text" th:field="*{author}" /></label><br/>
-  <label>ISBN: <input type="text" th:field="*{isbn}" /></label><br/>
+  <a th:href="@{/books}" class="nav-home">← Back to Books</a>
   
-    <label>Category:
-    <select th:field="*{category}">
-      <option value="">-- No Category --</option>
-      <option th:each="cat : ${categories}" 
-              th:value="${cat.id}" 
-              th:text="${cat.name}">Category</option>
-    </select>
-  </label><br/>
+  <h1>Add New Book</h1>
   
-  <button type="submit" name="btn_submit">Save</button>
-</form>
+  <form method="post" th:action="@{/books}" th:object="${book}" class="form-main">
+    <label>
+      <span>Title:</span>
+      <input type="text" th:field="*{title}" required />
+    </label>
+    
+    <label>
+      <span>Author:</span>
+      <input type="text" th:field="*{author}" />
+    </label>
+    
+    <label>
+      <span>ISBN:</span>
+      <input type="text" th:field="*{isbn}" />
+    </label>
+    
+    <label>
+      <span>Category:</span>
+      <select th:field="*{category}">
+        <option value="">-- No Category --</option>
+        <option th:each="cat : ${categories}" 
+                th:value="${cat.id}" 
+                th:text="${cat.name}">Category</option>
+      </select>
+    </label>
+    
+    <div class="form-actions">
+      <button type="submit" name="btn_submit">Save Book</button>
+      <a th:href="@{/books}" class="btn btn-cancel">Cancel</a>
+    </div>
+  </form>
 </body>
 </html>
