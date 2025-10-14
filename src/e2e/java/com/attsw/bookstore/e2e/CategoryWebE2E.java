@@ -184,7 +184,7 @@ class CategoryWebE2E {
             driver.findElement(By.cssSelector("a[href='/categories']")).click();
             
             // Wait for page to load
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("h1")));
             
             assertThat(driver.getPageSource()).contains("Category to Delete");
@@ -192,8 +192,12 @@ class CategoryWebE2E {
             // Click the specific delete button 
             driver.findElement(By.xpath("//form[@action='/categories/" + categoryId + "/delete']//button[@name='btn_delete']")).click();
             
-            // Wait for redirect
+            // Wait explicitly for redirect to complete
+            wait.until(ExpectedConditions.not(ExpectedConditions.urlContains("delete")));
             wait.until(ExpectedConditions.urlContains("/categories"));
+            
+            // Additional wait for page to be fully loaded
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("h1")));
             
             // Verify redirect and category no longer appears
             assertThat(driver.getCurrentUrl()).contains("/categories");
@@ -203,4 +207,5 @@ class CategoryWebE2E {
             driver.quit();
         }
     }
+           
 }
