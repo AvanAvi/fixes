@@ -18,8 +18,10 @@ public class Book {
 
     @ManyToOne
     private Category category;
-
-    public Book() {}                       // package-private for JPA
+    
+    
+    // Default constructor required by JPA for entity instantiation
+    public Book() {}                      
 
     
     public static Book withTitle(String title) {

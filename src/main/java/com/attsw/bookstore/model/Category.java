@@ -16,6 +16,7 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private final List<Book> books = new ArrayList<>();
 
+    // Default constructor required by JPA for entity instantiation
     public Category() {}
 
     public Long getId() { return id; }
