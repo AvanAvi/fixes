@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class BookstoreWebController {
 
+    private static final String REDIRECT_BOOKS = "redirect:/books";
+
     private final BookService bookService;
     private final CategoryService categoryService;
 
@@ -41,7 +43,7 @@ public class BookstoreWebController {
     @PostMapping("/books")
     public String saveBook(Book book) {
         bookService.saveBook(book);
-        return "redirect:/books";
+        return REDIRECT_BOOKS;
     }
     
     @GetMapping("/books/{id}/edit")
@@ -55,12 +57,12 @@ public class BookstoreWebController {
     @PostMapping("/books/{id}")
     public String updateBook(@PathVariable Long id, Book book) {
         bookService.updateBook(id, book);
-        return "redirect:/books";
+        return REDIRECT_BOOKS;
     }
     
     @PostMapping("/books/{id}/delete")
     public String deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
-        return "redirect:/books";
+        return REDIRECT_BOOKS;
     }
 }
