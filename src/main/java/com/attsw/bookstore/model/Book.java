@@ -20,8 +20,10 @@ public class Book {
     private Category category;
     
     
-    // Default constructor required by JPA for entity instantiation
-    public Book() {}                      
+    
+    public Book() {
+    	// Default constructor required by JPA for entity instantiation
+    }                      
 
     
     public static Book withTitle(String title) {
