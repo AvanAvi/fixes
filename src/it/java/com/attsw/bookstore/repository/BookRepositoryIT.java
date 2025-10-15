@@ -1,6 +1,9 @@
 package com.attsw.bookstore.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+import com.attsw.bookstore.model.Book;
+import com.attsw.bookstore.model.Category;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +14,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.attsw.bookstore.model.Book;
+
 
 @DataJpaTest
 @Testcontainers
@@ -32,6 +35,9 @@ class BookRepositoryTest {
 
     @Autowired
     BookRepository repository;
+    
+    @Autowired
+    CategoryRepository categoryRepository;
 
     @Test
     void shouldSaveAndFindBook() {
@@ -71,5 +77,33 @@ class BookRepositoryTest {
         repository.deleteById(saved.getId());
 
         assertFalse(repository.findById(saved.getId()).isPresent());
+    }
+    
+    @Test
+    void shouldFindBooksWithNullCategory() {
+        // Create and save a category
+        Category fiction = new Category();
+        fiction.setName("Fiction");
+        Category savedCategory = categoryRepository.save(fiction);
+        
+        // Create books - one with category, two without
+        Book bookWithCategory = Book.withTitle("1984");
+        bookWithCategory.setCategory(savedCategory);
+        
+        Book uncategorized1 = Book.withTitle("Clean Code");
+        Book uncategorized2 = Book.withTitle("Refactoring");
+        
+        repository.save(bookWithCategory);
+        repository.save(uncategorized1);
+        repository.save(uncategorized2);
+        
+        // Find uncategorized books
+        List<Book> uncategorizedBooks = repository.findByCategoryIsNull();
+        
+        assertEquals(2, uncategorizedBooks.size());
+        assertTrue(uncategorizedBooks.stream()
+            .anyMatch(b -> "Clean Code".equals(b.getTitle())));
+        assertTrue(uncategorizedBooks.stream()
+            .anyMatch(b -> "Refactoring".equals(b.getTitle())));
     }
 }

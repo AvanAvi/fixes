@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.attsw.bookstore.model.Category;
+import com.attsw.bookstore.model.Book;
 import com.attsw.bookstore.repository.CategoryRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,5 +76,46 @@ class CategoryServiceTest {
     void shouldDeleteCategory() {
         service.deleteCategory(1L);
         verify(repository).deleteById(1L);
+    }
+    
+    @Test
+    void shouldReturnTrueWhenCategoryHasBooks() {
+        Category category = new Category();
+        category.setId(1L);
+        category.setName("Fiction");
+        
+        Book book = Book.withTitle("1984");
+        category.addBook(book);
+        
+        when(repository.findById(1L)).thenReturn(Optional.of(category));
+        
+        boolean result = service.hasBooks(1L);
+        
+        assertThat(result).isTrue();
+        verify(repository).findById(1L);
+    }
+
+    @Test
+    void shouldReturnFalseWhenCategoryHasNoBooks() {
+        Category category = new Category();
+        category.setId(1L);
+        category.setName("Fiction");
+        
+        when(repository.findById(1L)).thenReturn(Optional.of(category));
+        
+        boolean result = service.hasBooks(1L);
+        
+        assertThat(result).isFalse();
+        verify(repository).findById(1L);
+    }
+    
+    @Test
+    void shouldReturnFalseWhenCategoryNotFound() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+        
+        boolean result = service.hasBooks(99L);
+        
+        assertThat(result).isFalse();
+        verify(repository).findById(99L);
     }
 }

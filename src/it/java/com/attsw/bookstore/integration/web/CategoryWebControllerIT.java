@@ -2,9 +2,11 @@ package com.attsw.bookstore.integration.web;
 
 import com.attsw.bookstore.web.CategoryWebController;
 import com.attsw.bookstore.service.CategoryService;
+import com.attsw.bookstore.service.BookService;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,6 +29,9 @@ class CategoryWebControllerIT {
 
     @MockitoBean
     private CategoryService categoryService;
+    
+    @MockitoBean
+    private BookService bookService;
 
     @Test
     void shouldShowCategoryListPage() throws Exception {
@@ -92,10 +97,32 @@ class CategoryWebControllerIT {
 
     @Test
     void shouldDeleteCategoryAndRedirectToList() throws Exception {
+        when(categoryService.hasBooks(1L)).thenReturn(false);
+        
         mvc.perform(post("/categories/1/delete"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/categories"));
 
+        verify(categoryService).hasBooks(1L);
         verify(categoryService).deleteCategory(1L);
+    }
+    
+    @Test
+    void shouldNotDeleteCategoryWhenItHasBooksAndShowError() throws Exception {
+        Category category = new Category();
+        category.setId(1L);
+        category.setName("Fiction");
+        
+        when(categoryService.hasBooks(1L)).thenReturn(true);
+        when(categoryService.getCategoryById(1L)).thenReturn(category);
+        
+        mvc.perform(post("/categories/1/delete"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/categories"))
+            .andExpect(flash().attributeExists("error"));
+
+        verify(categoryService).hasBooks(1L);
+        verify(categoryService).getCategoryById(1L);
+        verify(categoryService, never()).deleteCategory(1L);
     }
 }

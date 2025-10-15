@@ -5,24 +5,29 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.attsw.bookstore.model.Category;
 import com.attsw.bookstore.service.CategoryService;
+import com.attsw.bookstore.service.BookService;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class CategoryWebController {
 
     private final CategoryService categoryService;
+    private final BookService bookService;
 
-    public CategoryWebController(CategoryService categoryService) {
+    public CategoryWebController(CategoryService categoryService, BookService bookService) {
         this.categoryService = categoryService;
+        this.bookService = bookService;
     }
 
     @GetMapping("/categories")
     public String list(Model model) {
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
+        model.addAttribute("uncategorizedBooks", bookService.getUncategorizedBooks());
         return "categories/list";
     }
     @GetMapping("/categories/new")
@@ -49,7 +54,15 @@ public class CategoryWebController {
     }
     
     @PostMapping("/categories/{id}/delete")
-    public String deleteCategory(@PathVariable Long id) {
+    public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        if (categoryService.hasBooks(id)) {
+            Category category = categoryService.getCategoryById(id);
+            redirectAttributes.addFlashAttribute("error", 
+                "Cannot delete category '" + category.getName() + 
+                "'. It contains " + category.getBooks().size() + 
+                " book(s). Please remove or recategorize them first.");
+            return "redirect:/categories";
+        }
         categoryService.deleteCategory(id);
         return "redirect:/categories";
     }

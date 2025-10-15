@@ -8,4 +8,5 @@ public interface CategoryService {
     Category getCategoryById(Long id);
     Category saveCategory(Category category);
     void deleteCategory(Long id);
+    boolean hasBooks(Long id);
 }
