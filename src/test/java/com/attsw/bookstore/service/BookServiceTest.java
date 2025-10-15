@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -116,5 +117,17 @@ class BookServiceTest {
         assertNull(result);
         verify(repository).findById(99L);
         verifyNoMoreInteractions(repository);
+    }
+    
+    @Test
+    void shouldGetUncategorizedBooks() {
+        Book book1 = Book.withTitle("Clean Code");
+        Book book2 = Book.withTitle("Refactoring");
+        when(repository.findByCategoryIsNull()).thenReturn(Arrays.asList(book1, book2));
+
+        List<Book> result = service.getUncategorizedBooks();
+
+        assertEquals(2, result.size());
+        verify(repository).findByCategoryIsNull();
     }
 }

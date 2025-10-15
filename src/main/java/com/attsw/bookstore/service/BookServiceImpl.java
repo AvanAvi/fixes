@@ -46,4 +46,9 @@ public class BookServiceImpl implements BookService {
     public void deleteBook(Long id) {
         repository.deleteById(id);
     }
+    
+    @Override
+    public List<Book> getUncategorizedBooks() {
+        return repository.findByCategoryIsNull();
+    }
 }

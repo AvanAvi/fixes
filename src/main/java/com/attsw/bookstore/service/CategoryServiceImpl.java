@@ -33,4 +33,10 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(Long id) {
         repository.deleteById(id);
     }
+    
+    @Override
+    public boolean hasBooks(Long id) {
+        Category category = repository.findById(id).orElse(null);
+        return category != null && !category.getBooks().isEmpty();
+    }
 }
