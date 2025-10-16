@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import com.attsw.bookstore.model.Category;
 import com.attsw.bookstore.repository.CategoryRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -35,6 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
     
     @Override
+    @Transactional(readOnly = true)
     public boolean hasBooks(Long id) {
         Category category = repository.findById(id).orElse(null);
         return category != null && !category.getBooks().isEmpty();

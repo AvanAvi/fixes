@@ -1,6 +1,7 @@
 package com.attsw.bookstore.service;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional; 
 import org.springframework.stereotype.Service;
 import com.attsw.bookstore.model.Book;
 import com.attsw.bookstore.repository.BookRepository;
@@ -30,6 +31,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public Book updateBook(Long id, Book book) {
         Book existing = repository.findById(id).orElse(null);
         if (existing != null) {
