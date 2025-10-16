@@ -23,6 +23,10 @@
     <sonar.organization>avanavi</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.projectKey>AvanAvi_book-mgmt</sonar.projectKey>
+    <sonar.coverage.exclusions>
+        **/BookstoreManagementTddApplication.*,
+        **/model/**
+    </sonar.coverage.exclusions>
   </properties>
 
   <dependencies>
