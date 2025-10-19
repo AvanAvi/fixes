@@ -32,6 +32,16 @@ jobs:
         restore-keys: ${{ runner.os }}-sonar
     - name: Build & test
       run: mvn -B clean verify
+    - name: Build Docker image
+      run: docker build -t bookstore-management-tdd:${{ github.sha }} .
+      
+    - name: Test Docker image
+      run: |
+        docker run -d -p 8080:8080 --name bookstore-test bookstore-management-tdd:${{ github.sha }}
+        sleep 10
+        curl --fail http://localhost:8080 || exit 1
+        docker stop bookstore-test
+        docker rm bookstore-test
     - name: SonarCloud analysis
       run: mvn -B sonar:sonar -Dsonar.token=${{ secrets.SONAR_TOKEN }}
       env:
