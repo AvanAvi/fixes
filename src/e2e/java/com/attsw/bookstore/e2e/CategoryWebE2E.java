@@ -19,7 +19,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
  */
 class CategoryWebE2E { // NOSONAR
 
-	private static int port = Integer.parseInt(System.getProperty("server.port", "8080"));
+	private static int port = Integer.parseInt(System.getProperty("server.port", "9090"));
 	private static String baseUrl = "http://localhost:" + port;
 
 	private WebDriver driver;

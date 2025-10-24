@@ -15,7 +15,7 @@ import io.restassured.http.ContentType;
  */
 class CategoryRestControllerE2E { // NOSONAR
 
-	private static int port = Integer.parseInt(System.getProperty("server.port", "8080"));
+	private static int port = Integer.parseInt(System.getProperty("server.port", "9090"));
 
 	@BeforeEach
 	void setup() {
