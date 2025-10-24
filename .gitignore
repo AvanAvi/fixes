@@ -1,17 +1,29 @@
-# Eclipse
-bin/
 # Maven
 target/
-pom.xml.tag
-pom.xml.releaseBackup
 pom.xml.versionsBackup
-# Java
-*.class
-*.jar
-*.war
+pom.xml.backup*
+pom.xml.bak*
+
+# IDE
+.settings/
+.classpath
+.project
+.vscode/
+.idea/
+*.iml
+
 # OS
 .DS_Store
 Thumbs.db
-# IntelliJ (defensive)
-.idea/
-*.iml
+
+# Logs
+*.log
+full-error.log
+e2e-profile.txt
+
+# Test reports
+*.dump
+*.dumpstream
+
+# Other
+*.class
