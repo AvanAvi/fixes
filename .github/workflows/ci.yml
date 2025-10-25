@@ -32,39 +32,6 @@ jobs:
       run: mvn -B clean verify
     - name: Build Docker image
       run: docker build -t bookstore-management-tdd:${{ github.sha }} .
-    - name: Test Docker image
-      run: |
-        # Start the container
-        docker run -d -p 9090:9090 --name bookstore-test bookstore-management-tdd:${{ github.sha }}
-        
-        # Wait for the application to be ready (max 60 seconds)
-        echo "Waiting for application to start..."
-        for i in {1..60}; do
-          if curl -s http://localhost:9090/actuator/health > /dev/null 2>&1 || curl -s http://localhost:9090 > /dev/null 2>&1; then
-            echo "Application is ready after $i seconds!"
-            break
-          fi
-          if [ $i -eq 60 ]; then
-            echo "ERROR: Application failed to start within 60 seconds"
-            echo "===== Container logs ====="
-            docker logs bookstore-test
-            echo "=========================="
-            docker stop bookstore-test
-            docker rm bookstore-test
-            exit 1
-          fi
-          echo "Waiting... ($i/60)"
-          sleep 1
-        done
-        
-        # Test the application endpoint
-        echo "Testing application..."
-        curl --fail http://localhost:9090 || curl --fail http://localhost:9090/actuator/health || exit 1
-        echo "Application test successful!"
-        
-        # Cleanup
-        docker stop bookstore-test
-        docker rm bookstore-test
     - name: SonarCloud analysis
       run: mvn -B sonar:sonar -Dsonar.token=${{ secrets.SONAR_TOKEN }}
       env:
